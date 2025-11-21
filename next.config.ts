@@ -1,7 +1,27 @@
-import type { NextConfig } from "next";
+type NextConfig = {
+  reactStrictMode?: boolean;
+  images?: {
+    remotePatterns?: Array<{
+      protocol?: string;
+      hostname?: string;
+    }>;
+  };
+  experimental?: Record<string, any>;
+};
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
+  },
+  experimental: {
+    optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"],
+  },
 };
 
 export default nextConfig;
