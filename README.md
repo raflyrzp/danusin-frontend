@@ -314,9 +314,6 @@ npm run format
 - **Tailwind CSS** untuk utility-first styling
 - **Shadcn UI** untuk komponen dasar (button, input, card, dialog, dll)
 - **Tailwind CSS Animate** untuk animasi halus
-- **Dark Mode** dengan `next-themes`:
-  - Menggunakan class `dark` di HTML
-  - Theme switcher bisa ditambahkan di navbar
 
 ## 🔐 Authentication (Frontend)
 
