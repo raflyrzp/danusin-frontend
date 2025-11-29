@@ -1,26 +1,33 @@
 "use client";
 
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock, Phone, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
   registerSchema,
   type RegisterSchema,
 } from "@/schemas/auth/register.schema";
+import { registerAction } from "@/actions/register";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface RegisterFormProps {
-  onSubmit?: (values: RegisterSchema) => Promise<void> | void;
-  loading?: boolean;
+  className?: string;
 }
 
-export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
+export function RegisterForm({ className }: RegisterFormProps) {
+  const [error, setError] = useState<string | undefined>("");
+  const [success, setSuccess] = useState<string | undefined>("");
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -33,14 +40,38 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
     },
   });
 
-  const submitting = loading ?? isSubmitting;
+  const handleFormSubmit = (values: RegisterSchema) => {
+    setError("");
+    setSuccess("");
 
-  const handleFormSubmit = async (values: RegisterSchema) => {
-    await onSubmit?.(values);
+    startTransition(async () => {
+      const result = await registerAction(values);
+
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setSuccess(result.success);
+        // router.push("/login");
+      }
+    });
   };
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit(handleFormSubmit)}>
+    <form
+      className={`space-y-4 ${className}`}
+      onSubmit={handleSubmit(handleFormSubmit)}
+    >
+      {error && (
+        <div className="p-3 rounded-md bg-red-50 text-red-600 text-sm">
+          {error}
+        </div>
+      )}
+      {success && (
+        <div className="p-3 rounded-md bg-green-50 text-green-600 text-sm">
+          {success}
+        </div>
+      )}
+
       <div className="space-y-1.5">
         <Label htmlFor="name">Nama Lengkap</Label>
         <div className="flex items-center rounded-lg border border-[#E5DEC5] bg-white px-3 shadow-sm focus-within:ring-2 focus-within:ring-[#FEBA17] focus-within:ring-offset-1">
@@ -48,6 +79,7 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
           <Input
             id="name"
             placeholder="Nama lengkap"
+            disabled={isPending}
             className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
             {...register("name")}
           />
@@ -65,6 +97,7 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
             id="email"
             type="email"
             placeholder="contoh@gmail.com"
+            disabled={isPending}
             className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
             {...register("email")}
           />
@@ -82,6 +115,7 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
             id="phone"
             type="tel"
             placeholder="08xxxxxxxxxx"
+            disabled={isPending}
             className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
             {...register("phone")}
           />
@@ -99,7 +133,8 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
             <Input
               id="password"
               type="password"
-              placeholder="Minimal 8 karakter"
+              placeholder="Min 8 karakter"
+              disabled={isPending}
               className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
               {...register("password")}
             />
@@ -110,13 +145,14 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="confirmPassword">Konfirmasi Password</Label>
+          <Label htmlFor="confirmPassword">Konfirmasi</Label>
           <div className="flex items-center rounded-lg border border-[#E5DEC5] bg-white px-3 shadow-sm focus-within:ring-2 focus-within:ring-[#FEBA17] focus-within:ring-offset-1">
             <Lock className="mr-2 h-4 w-4 text-[#B4A98C]" />
             <Input
               id="confirmPassword"
               type="password"
               placeholder="Ulangi password"
+              disabled={isPending}
               className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
               {...register("confirmPassword")}
             />
@@ -134,6 +170,7 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
           <input
             type="checkbox"
             className="mt-[3px] h-3.5 w-3.5 rounded border border-[#E5DEC5] text-[#FEBA17]"
+            disabled={isPending}
             {...register("agree")}
           />
           <span>
@@ -162,10 +199,10 @@ export function RegisterForm({ onSubmit, loading }: RegisterFormProps) {
         type="submit"
         size="lg"
         fullWidth
-        disabled={submitting}
+        disabled={isPending}
         className="mt-1"
       >
-        {submitting ? "Memproses..." : "Daftar"}
+        {isPending ? "Memproses..." : "Daftar"}
       </Button>
     </form>
   );

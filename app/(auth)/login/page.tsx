@@ -4,10 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export default function LoginPage() {
-  const handleLogin = async () => {
-    // TODO: panggil service login
-  };
-
   return (
     <div className="flex min-h-[calc(100vh-56px-160px)] items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
@@ -20,33 +16,36 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <Card className="rounded-3xl px-6 py-7">
-          <CardHeader className="mb-6 space-y-2">
-            <CardTitle>Masuk</CardTitle>
+        <Card className="rounded-3xl px-6 py-7 bg-white/80 backdrop-blur-sm border border-[#E5DEC5]/50 shadow-sm">
+          <CardHeader className="mb-6 space-y-2 text-center">
+            <CardTitle className="text-2xl text-[#4E1F00]">Masuk</CardTitle>
           </CardHeader>
           <CardContent>
-            <LoginForm onSubmit={handleLogin} />
-            <p className="mt-4 text-center text-sm text-[#7A6848]">
+            {/* Tidak perlu passing prop onSubmit lagi */}
+            <LoginForm />
+
+            <p className="mt-6 text-center text-sm text-[#7A6848]">
               Belum punya akun?{" "}
               <Link
                 href={ROUTES.REGISTER}
-                className="font-medium text-[#4E1F00] hover:underline"
+                className="font-bold text-[#FEBA17] hover:text-[#d99f14] hover:underline transition-colors"
               >
                 Daftar sekarang
               </Link>
             </p>
-            <p className="mt-4 text-center text-[11px] text-[#A0906B]">
+
+            <p className="mt-8 text-center text-[10px] text-[#A0906B] leading-tight">
               Dengan masuk, Anda menyetujui{" "}
               <button
                 type="button"
-                className="font-semibold underline underline-offset-2"
+                className="font-semibold hover:underline underline-offset-2"
               >
                 Syarat &amp; Ketentuan
               </button>{" "}
               dan{" "}
               <button
                 type="button"
-                className="font-semibold underline underline-offset-2"
+                className="font-semibold hover:underline underline-offset-2"
               >
                 Kebijakan Privasi
               </button>
