@@ -3,6 +3,7 @@ export const ROUTES = {
   LOGIN: "/login",
   REGISTER: "/register",
   PRODUCTS: "/products",
+  PRODUCT_DETAIL: (id: number | string) => `/products/${id}`,
   PROFILE: "/profile",
   DASHBOARD: {
     BUYER: "/dashboard/buyer",

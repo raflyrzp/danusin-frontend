@@ -6,16 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { loginSchema, type LoginSchema } from "@/schemas/auth/login.schema";
-import { loginAction } from "@/actions/login";
+import { loginAction } from "@/actions/auth/login";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface LoginFormProps {
-  className?: string;
-}
-
-export function LoginForm({ className }: LoginFormProps) {
+export function LoginForm() {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -25,7 +21,7 @@ export function LoginForm({ className }: LoginFormProps) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginSchema>({
+  } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       credential: "",
@@ -34,29 +30,25 @@ export function LoginForm({ className }: LoginFormProps) {
     },
   });
 
-  const handleFormSubmit = (values: LoginSchema) => {
+  const handleFormSubmit = (values: any) => {
     setError("");
     setSuccess("");
 
     startTransition(async () => {
-      const result = await loginAction(values);
+      const result = await loginAction(values as LoginSchema);
 
       if (result.error) {
         setError(result.error);
       } else {
         setSuccess(result.success);
+        router.refresh();
         // router.push("/dashboard");
-        // router.refresh();
       }
     });
   };
 
   return (
-    <form
-      className={`space-y-4 ${className}`}
-      onSubmit={handleSubmit(handleFormSubmit)}
-    >
-      {/* Alert Error/Success */}
+    <form className="space-y-4" onSubmit={handleSubmit(handleFormSubmit)}>
       {error && (
         <div className="p-3 rounded-md bg-red-50 text-red-600 text-sm border border-red-100">
           {error}
@@ -74,15 +66,16 @@ export function LoginForm({ className }: LoginFormProps) {
           <Mail className="mr-2 h-4 w-4 text-[#B4A98C]" />
           <Input
             id="credential"
-            type="text"
             disabled={isPending}
-            placeholder="contoh@gmail.com atau 2108xxxxxx"
+            placeholder="contoh@gmail.com atau 2108xxxx"
             className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
             {...register("credential")}
           />
         </div>
         {errors.credential && (
-          <p className="text-xs text-red-600">{errors.credential.message}</p>
+          <p className="text-xs text-red-600">
+            {errors.credential.message as string}
+          </p>
         )}
       </div>
 
@@ -100,7 +93,9 @@ export function LoginForm({ className }: LoginFormProps) {
           />
         </div>
         {errors.password && (
-          <p className="text-xs text-red-600">{errors.password.message}</p>
+          <p className="text-xs text-red-600">
+            {errors.password.message as string}
+          </p>
         )}
       </div>
 
