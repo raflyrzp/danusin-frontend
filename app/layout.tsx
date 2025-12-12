@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-// @ts-ignore - allow global CSS side-effect import without type declarations
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
@@ -19,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
+    <html lang="id" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
           <div className="flex min-h-screen flex-col bg-danus-background">

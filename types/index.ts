@@ -1,3 +1,20 @@
+// ============================================
+// IMAGE
+// ============================================
+export interface Image {
+  id: number;
+  url: string;
+  alt_text: string | null;
+  entity_type: "product" | "user";
+  entity_id: number;
+  is_primary: boolean;
+  sort_order: number;
+  created_at: string;
+}
+
+// ============================================
+// USER
+// ============================================
 export interface User {
   id: number;
   nim: string;
@@ -12,23 +29,35 @@ export interface User {
   updated_at: string;
 }
 
+// ============================================
+// PRODUCT
+// ============================================
 export interface Product {
   id: number;
   seller_id: number;
   name: string;
   description: string;
   price: number;
-  image_url: string | null;
+  stock: number;
   po_open_date: string;
   po_close_date: string;
   delivery_date: string | null;
   created_at: string;
   updated_at: string;
+  // Images
+  images?: Image[];
+  primary_image?: string | null;
+  // Computed
+  available_days?: string[];
+  // Joined
   seller_name?: string;
   seller_faculty?: string;
   seller_whatsapp?: string;
 }
 
+// ============================================
+// ORDER
+// ============================================
 export interface Order {
   id: number;
   buyer_id: number;
@@ -46,6 +75,9 @@ export interface Order {
   buyer_whatsapp?: string;
 }
 
+// ============================================
+// NOTIFICATION
+// ============================================
 export interface Notification {
   id: number;
   user_id: number;
@@ -55,6 +87,9 @@ export interface Notification {
   created_at: string;
 }
 
+// ============================================
+// DASHBOARD
+// ============================================
 export interface DashboardSellerSummary {
   total_revenue: number;
   pending_orders_count: number;
@@ -73,7 +108,10 @@ export interface DashboardBuyerSummary {
   recent_orders: Order[];
 }
 
-export interface ApiResponse<T = any> {
+// ============================================
+// API TYPES
+// ============================================
+export interface ApiResponse<T = unknown> {
   message: string;
   data?: T;
   meta?: {
@@ -93,6 +131,9 @@ export interface ApiError {
   }>;
 }
 
+// ============================================
+// PAGINATION & FILTERS
+// ============================================
 export interface PaginationParams {
   page?: number;
   limit?: number;
@@ -106,5 +147,34 @@ export interface ProductFilters extends PaginationParams {
   seller_id?: number;
 }
 
+// ============================================
+// AUTH TYPES
+// ============================================
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  nim: string;
+  name: string;
+  major: string;
+  faculty: string;
+  batch_year: number;
+  whatsapp: string;
+  email: string;
+  password: string;
+  role?: "buyer" | "seller";
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
+// ============================================
+// TYPE ALIASES
+// ============================================
 export type UserRole = "buyer" | "seller";
 export type OrderStatus = Order["status"];
+export type ImageEntityType = Image["entity_type"];

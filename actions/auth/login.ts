@@ -34,7 +34,7 @@ export async function loginAction(values: LoginSchema): Promise<ActionState> {
       };
     }
 
-    const token = data.data?.token;
+    const token = (data.data as { token: string })?.token;
 
     if (token) {
       const cookieStore = await cookies();
