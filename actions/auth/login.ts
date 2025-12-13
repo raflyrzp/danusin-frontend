@@ -8,6 +8,7 @@ import type { ApiResponse } from "@/types";
 interface ActionState {
   error?: string;
   success?: string;
+  token?: string;
 }
 
 export async function loginAction(values: LoginSchema): Promise<ActionState> {
@@ -47,6 +48,9 @@ export async function loginAction(values: LoginSchema): Promise<ActionState> {
         path: "/",
         sameSite: "lax",
       });
+
+      // Kembalikan token ke client agar bisa disimpan di localStorage
+      return { success: "Login berhasil!", token };
     }
 
     return { success: "Login berhasil!" };

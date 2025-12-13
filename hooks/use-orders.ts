@@ -1,61 +1,71 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ordersService, type CreateOrderDTO, type OrderFilters } from "@/services/orders.service";
-import type { OrderStatus } from "@/types";
+"use client";
 
-export function useMyOrders(filters?: OrderFilters) {
-  return useQuery({
-    queryKey: ["orders", "buyer", filters],
-    queryFn: () => ordersService. getMyOrders(filters),
+import { useState, useEffect, useCallback } from "react";
+import { Order, OrderStatus } from "@/types";
+import { orderService, OrdersQueryParams } from "@/services/order.service";
+import { toast } from "sonner";
+
+export function useOrders(initialParams: OrdersQueryParams = {}) {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total:  0,
+    totalPages: 0,
   });
-}
+  const [params, setParams] = useState<OrdersQueryParams>(initialParams);
 
-export function useSellerOrders(filters?: OrderFilters) {
-  return useQuery({
-    queryKey: ["orders", "seller", filters],
-    queryFn: () => ordersService. getSellerOrders(filters),
-  });
-}
+  const fetchOrders = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await orderService. getMyOrders(params);
+      setOrders(data. orders);
+      setPagination(data.pagination);
+    } catch (err) {
+      setError(err instanceof Error ? err.message :  "Gagal memuat pesanan");
+      toast.error("Gagal memuat pesanan");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [params]);
 
-export function useOrder(id: number | string) {
-  return useQuery({
-    queryKey: ["order", id],
-    queryFn: () => ordersService.getById(id),
-    enabled: !!id,
-  });
-}
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
-export function useCreateOrder() {
-  const queryClient = useQueryClient();
+  const setPage = (page: number) => {
+    setParams((prev) => ({ ...prev, page }));
+  };
 
-  return useMutation({
-    mutationFn: (data: CreateOrderDTO) => ordersService.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
-    },
-  });
-}
+  const setStatus = (status?:  OrderStatus) => {
+    setParams((prev) => ({ ...prev, status, page: 1 }));
+  };
 
-export function useUpdateOrderStatus() {
-  const queryClient = useQueryClient();
+  const cancelOrder = async (orderId: number) => {
+    try {
+      await orderService.cancelOrder(orderId);
+      toast.success("Pesanan berhasil dibatalkan");
+      await fetchOrders();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err. message : "Gagal membatalkan pesanan";
+      toast.error(message);
+      throw err;
+    }
+  };
 
-  return useMutation({
-    mutationFn: ({ id, status }: { id: number | string; status: OrderStatus }) =>
-      ordersService.updateStatus(id, status),
-    onSuccess: (_, variables) => {
-      queryClient. invalidateQueries({ queryKey: ["orders"] });
-      queryClient.invalidateQueries({ queryKey: ["order", variables.id] });
-    },
-  });
-}
-
-export function useCancelOrder() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: number | string) => ordersService.cancel(id),
-    onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
-      queryClient. invalidateQueries({ queryKey: ["order", id] });
-    },
-  });
+  return {
+    orders,
+    isLoading,
+    error,
+    pagination,
+    refetch: fetchOrders,
+    setPage,
+    setStatus,
+    cancelOrder,
+    currentStatus: params.status,
+  };
 }

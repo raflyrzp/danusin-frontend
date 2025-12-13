@@ -41,8 +41,15 @@ export function LoginForm() {
         setError(result.error);
       } else {
         setSuccess(result.success);
+
+        // Simpan token ke localStorage agar service lain bisa menggunakannya
+        if (result.token) {
+          localStorage.setItem("token", result.token);
+        }
+
+        // Refresh router untuk memperbarui state autentikasi
         router.refresh();
-        // router.push("/dashboard");
+        router.push("/");
       }
     });
   };

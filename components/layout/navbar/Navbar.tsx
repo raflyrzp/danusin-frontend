@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Bell, Menu, ShoppingCart, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/sheet";
 import { DashboardMenu } from "./DashboardMenu";
 import { UserMenu } from "./UserMenu";
+import { useAuth } from "@/hooks/use-auth";
+import { logoutAction } from "@/actions/auth/logout";
 
 const navLinks = [
   { label: "Beranda", href: ROUTES.HOME },
@@ -30,13 +32,33 @@ interface NavbarProps {
 }
 
 export function Navbar({
-  isAuthenticated = false,
-  userName,
-  userEmail,
-  onLogout,
+  isAuthenticated: propIsAuthenticated,
+  userName: propUserName,
+  userEmail: propUserEmail,
+  onLogout: propOnLogout,
 }: NavbarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+
+  // Gunakan useAuth hook untuk mengecek status autentikasi
+  const { user, isAuthenticated: hookIsAuthenticated, isLoading, logout: hookLogout } = useAuth();
+
+  // Prioritaskan props jika diberikan, jika tidak gunakan dari hook
+  const isAuthenticated = propIsAuthenticated !== undefined ? propIsAuthenticated : hookIsAuthenticated;
+  const userName = propUserName || user?.name;
+  const userEmail = propUserEmail || user?.email;
+
+  const handleLogout = async () => {
+    if (propOnLogout) {
+      propOnLogout();
+    } else {
+      // Hapus token dari localStorage
+      hookLogout();
+      // Hapus cookie session via server action
+      await logoutAction();
+    }
+  };
 
   const isAuthPage =
     pathname.startsWith("/login") ||
@@ -62,7 +84,7 @@ export function Navbar({
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#F3E8C0] bg-[#FEBA17]/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 w-full border-b border-[#F3E8C0] bg-[#FEBA17]/95 backdrop-blur-sm" >
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         {/* Brand & nav kiri */}
         <div className="flex items-center gap-6">
@@ -99,27 +121,45 @@ export function Navbar({
 
         {/* Desktop actions */}
         <div className="hidden items-center gap-2 md:flex">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full text-[#4E1F00] hover:bg-[#f7e09a]"
-            aria-label="Notifikasi"
-          >
-            <Bell className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full text-[#4E1F00] hover:bg-[#f7e09a]"
-            aria-label="Keranjang"
-          >
-            <ShoppingCart className="h-5 w-5" />
-          </Button>
+          {isAuthenticated && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full text-[#4E1F00] hover:bg-[#f7e09a]"
+                aria-label="Notifikasi"
+                asChild
+              >
+                <Link href="/notifications">
+                  <Bell className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full text-[#4E1F00] hover:bg-[#f7e09a]"
+                aria-label="Keranjang"
+                asChild
+              >
+                <Link href="/cart">
+                  <ShoppingCart className="h-5 w-5" />
+                </Link>
+              </Button>
+            </>
+          )}
 
           {isAuthenticated ? (
-            <UserMenu name={userName} email={userEmail} onLogout={onLogout} />
+            <UserMenu name={userName} email={userEmail} onLogout={handleLogout} />
           ) : (
             <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full text-[#4E1F00] hover:bg-[#f7e09a]"
+                aria-label="Keranjang"
+              >
+                <ShoppingCart className="h-5 w-5" />
+              </Button>
               <Button
                 variant="ghost"
                 className="rounded-full px-3 text-sm text-[#4E1F00] hover:bg-[#f7e09a]"
@@ -140,14 +180,19 @@ export function Navbar({
 
         {/* Mobile actions */}
         <div className="flex items-center gap-2 md:hidden">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full text-[#4E1F00] hover:bg-[#f7e09a]"
-            aria-label="Keranjang"
-          >
-            <ShoppingCart className="h-5 w-5" />
-          </Button>
+          {isAuthenticated && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full text-[#4E1F00] hover:bg-[#f7e09a]"
+              aria-label="Keranjang"
+              asChild
+            >
+              <Link href="/cart">
+                <ShoppingCart className="h-5 w-5" />
+              </Link>
+            </Button>
+          )}
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -174,6 +219,16 @@ export function Navbar({
               </SheetHeader>
 
               <div className="space-y-2">
+                {/* User info jika authenticated */}
+                {isAuthenticated && userName && (
+                  <div className="mb-4 p-3 rounded-xl bg-[#F5D36B]/50">
+                    <p className="font-medium text-[#4E1F00]">{userName}</p>
+                    {userEmail && (
+                      <p className="text-xs text-[#74512D]">{userEmail}</p>
+                    )}
+                  </div>
+                )}
+
                 {navLinks.map((link) => {
                   const active = pathname === link.href;
                   return (
@@ -192,6 +247,28 @@ export function Navbar({
                     </Link>
                   );
                 })}
+
+                {/* Menu khusus authenticated */}
+                {isAuthenticated && (
+                  <>
+                    <Link
+                      href="/notifications"
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-[#4E1F00] hover:bg-[#f7e09a]"
+                    >
+                      <Bell className="h-4 w-4" />
+                      Notifikasi
+                    </Link>
+                    <Link
+                      href="/cart"
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-[#4E1F00] hover:bg-[#f7e09a]"
+                    >
+                      <ShoppingCart className="h-4 w-4" />
+                      Keranjang
+                    </Link>
+                  </>
+                )}
 
                 <div className="mt-2">
                   <p className="mb-1 text-xs font-semibold text-[#7A6848]">
@@ -220,7 +297,7 @@ export function Navbar({
                     <Button
                       className="w-full rounded-full bg-[#4E1F00] text-[#F8F4E1] hover:bg-[#74512D]"
                       onClick={() => {
-                        onLogout?.();
+                        handleLogout();
                         setOpen(false);
                       }}
                     >
