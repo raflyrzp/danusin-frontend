@@ -24,7 +24,7 @@ export function FeaturedProducts() {
     );
   }
 
-  const products = data?.data?.data?.products || [];
+  const products = data?.data || [];
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-12">
@@ -44,7 +44,7 @@ export function FeaturedProducts() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
-          {products.map((product) => (
+          {(Array.isArray(products) ? products : []).map((product: any) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

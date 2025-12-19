@@ -5,7 +5,7 @@ export interface Image {
   id: number;
   url: string;
   alt_text: string | null;
-  entity_type: "product" | "user";
+  entity_type: "product" | "user" | "store";
   entity_id: number;
   is_primary: boolean;
   sort_order: number;
@@ -27,6 +27,22 @@ export interface User {
   role: "buyer" | "seller";
   created_at: string;
   updated_at: string;
+  profile_image?: string | null;
+}
+
+// ============================================
+// STORE
+// ============================================
+export interface Store {
+  id: number;
+  user_id: number;
+  store_name: string;
+  description: string | null;
+  whatsapp: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  store_image?: string | null;
 }
 
 // ============================================
@@ -36,23 +52,24 @@ export interface Product {
   id: number;
   seller_id: number;
   name: string;
-  description: string;
+  description:  string;
   price: number;
-  stock: number;
+  stock:  number;
   po_open_date: string;
-  po_close_date: string;
+  po_close_date:  string;
   delivery_date: string | null;
   created_at: string;
   updated_at: string;
   // Images
-  images?: Image[];
+  images?:  Image[];
   primary_image?: string | null;
   // Computed
-  available_days?: string[];
+  available_days?:  string[];
   // Joined
   seller_name?: string;
   seller_faculty?: string;
   seller_whatsapp?: string;
+  store_name?: string;
 }
 
 // ============================================
@@ -62,6 +79,7 @@ export interface Order {
   id: number;
   buyer_id: number;
   product_id: number;
+  seller_id?:  number;
   quantity: number;
   total_price: number;
   status: "Menunggu Konfirmasi" | "Diproses" | "Selesai" | "Dibatalkan";
@@ -69,8 +87,10 @@ export interface Order {
   updated_at: string;
   product_name?: string;
   product_image?: string;
+  product_price?: number;
   seller_name?: string;
   seller_whatsapp?: string;
+  store_name?: string;
   buyer_name?: string;
   buyer_whatsapp?: string;
 }
@@ -79,7 +99,7 @@ export interface Order {
 // NOTIFICATION
 // ============================================
 export interface Notification {
-  id: number;
+  id:  number;
   user_id: number;
   title: string;
   message: string;
@@ -92,19 +112,21 @@ export interface Notification {
 // ============================================
 export interface DashboardSellerSummary {
   total_revenue: number;
+  monthly_revenue: number;
   pending_orders_count: number;
-  processing_orders_count: number;
+  processing_orders_count:  number;
+  completed_orders_count:  number;
   active_products_count: number;
   total_products_count: number;
   total_orders_count: number;
   recent_orders: Order[];
-  monthly_revenue: Array<{ month: string; revenue: number }>;
+  monthly_sales: Array<{ month: string; revenue: number; orders: number }>;
 }
 
 export interface DashboardBuyerSummary {
   total_orders_count: number;
   total_spent: number;
-  orders_by_status: Array<{ status: string; count: number }>;
+  orders_by_status:  Array<{ status: string; count: number }>;
   recent_orders: Order[];
 }
 
@@ -115,7 +137,7 @@ export interface ApiResponse<T = unknown> {
   message: string;
   data?: T;
   meta?: {
-    page?: number;
+    page?:  number;
     limit?: number;
     total?: number;
     totalPages?: number;
@@ -124,9 +146,9 @@ export interface ApiResponse<T = unknown> {
 
 export interface ApiError {
   message: string;
-  status?: number;
+  status?:  number;
   errors?: Array<{
-    path: string;
+    path:  string;
     message: string;
   }>;
 }
@@ -135,7 +157,7 @@ export interface ApiError {
 // PAGINATION & FILTERS
 // ============================================
 export interface PaginationParams {
-  page?: number;
+  page?:  number;
   limit?: number;
 }
 
@@ -161,15 +183,35 @@ export interface RegisterRequest {
   major: string;
   faculty: string;
   batch_year: number;
-  whatsapp: string;
+  whatsapp:  string;
   email: string;
   password: string;
-  role?: "buyer" | "seller";
+  role?:  "buyer" | "seller";
 }
 
 export interface AuthResponse {
   user: User;
   token: string;
+}
+
+// ============================================
+// CREATE/UPDATE DTOs
+// ============================================
+export interface CreateProductDTO {
+  name:  string;
+  description: string;
+  price: number;
+  stock: number;
+  po_open_date:  string;
+  po_close_date:  string;
+  delivery_date?:  string;
+  images?: string[];
+}
+
+export interface CreateStoreDTO {
+  store_name: string;
+  description?:  string;
+  whatsapp: string;
 }
 
 // ============================================

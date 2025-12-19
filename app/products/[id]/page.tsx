@@ -1,6 +1,7 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useProduct } from "@/hooks/use-products";
 import { BackButton } from "@/components/ui/back-button";
 import { ImageGallery } from "@/components/products/ImageGallery";
@@ -9,18 +10,37 @@ import { Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
+import { orderService } from "@/services/order.service";
+import { toast } from "sonner";
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
+  // Unwrap params Promise using React.use() - must be called unconditionally at top level
   const { id } = use(params);
-  const { data, isLoading, isError } = useProduct(id);
 
-  const handleAddToCart = async (quantity: number) => {
-    console.log(`Adding ${quantity} items to cart for product ${id}`);
-    alert(`${quantity} item berhasil ditambahkan ke keranjang! `);
+  // All hooks must be called unconditionally and in the same order every render
+  const router = useRouter();
+  const { data, isLoading, isError } = useProduct(id);
+  const [isOrdering, setIsOrdering] = useState(false);
+
+  const handleOrder = async (quantity: number) => {
+    setIsOrdering(true);
+    try {
+      await orderService.createOrder({
+        product_id: Number.parseInt(id, 10),
+        quantity,
+      });
+      toast.success("Pesanan berhasil dibuat!");
+      router.push("/buyer/orders");
+    } catch (err: any) {
+      console.error("createOrder error:", err);
+      toast.error(err?.message || "Gagal membuat pesanan");
+    } finally {
+      setIsOrdering(false);
+    }
   };
 
   // Loading state
@@ -35,8 +55,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     );
   }
 
-  // Response: { data: Product, meta: {... } }
-  // data?. data adalah Product langsung
   const product = data?.data;
 
   // Error state
@@ -61,8 +79,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     );
   }
 
-  // const images = product. images || [];
-
   return (
     <div className="min-h-screen bg-[#F8F4E1]">
       <div className="mx-auto max-w-6xl px-4 py-6">
@@ -84,7 +100,11 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
           {/* Right: Product Info */}
           <div className="order-2">
-            <ProductInfo product={product} onAddToCart={handleAddToCart} />
+            <ProductInfo
+              product={product}
+              onAddToCart={handleOrder}
+              actionLabel="Pesan"
+            />
           </div>
         </div>
       </div>

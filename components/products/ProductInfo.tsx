@@ -8,16 +8,28 @@ import { QuantitySelector } from "./QuantitySelector";
 import { formatPrice, formatDateLong, cn } from "@/lib/utils";
 import type { Product } from "@/types";
 
+
 interface ProductInfoProps {
+
   product: Product;
+
   onAddToCart?: (quantity: number) => void;
+
+  actionLabel?: string;
 }
 
-export function ProductInfo({ product, onAddToCart }: ProductInfoProps) {
+
+
+export function ProductInfo({ product, onAddToCart, actionLabel = "Tambah ke Keranjang" }: ProductInfoProps) {
+
   const [quantity, setQuantity] = useState(1);
+
   const [isAdding, setIsAdding] = useState(false);
+
   const [isOpen, setIsOpen] = useState(true);
+
   const [mounted, setMounted] = useState(false);
+
 
   useEffect(() => {
     setMounted(true);
@@ -38,17 +50,22 @@ export function ProductInfo({ product, onAddToCart }: ProductInfoProps) {
     }
   };
 
+
   const handleContactSeller = () => {
+
     if (product.seller_whatsapp) {
+
       const message = encodeURIComponent(
-        `Halo, saya tertarik dengan produk "${product.name}" di Danus. in`
+
+        `Halo, saya tertarik dengan produk "${product.name}" di Danus.in`
       );
-      window.open(
-        `https://wa.me/${product. seller_whatsapp}? text=${message}`,
-        "_blank"
-      );
+
+      const phone = String(product.seller_whatsapp).replace(/^0/, "62").replace(/\\s+/g, "");
+      window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+
     }
   };
+
 
   return (
     <div className="space-y-6">
@@ -148,17 +165,23 @@ export function ProductInfo({ product, onAddToCart }: ProductInfoProps) {
           </span>
         </div>
 
-        {/* Add to Cart Button */}
+
         <Button
           size="lg"
           fullWidth
           className="gap-2 text-base"
+
           onClick={handleAddToCart}
+
           disabled={!mounted || !isOpen || isAdding || !hasStock}
+
         >
+
           <ShoppingCart className="h-5 w-5" />
-          {isAdding ? "Menambahkan..." : "Tambah ke Keranjang"}
+
+          {isAdding ? "Menambahkan..." : actionLabel}
         </Button>
+
       </div>
 
       {/* PO Dates Info */}

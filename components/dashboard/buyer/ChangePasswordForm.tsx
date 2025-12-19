@@ -56,15 +56,15 @@ export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
         <div className="relative">
           <Input
             id="currentPassword"
-            type={showPasswords.current ? "text" :  "password"}
-            {... register("currentPassword")}
+            type={showPasswords.current ? "text" : "password"}
+            {...register("currentPassword")}
             className="border-[#E3D9BD] focus:border-[#FEBA17] focus:ring-[#FEBA17] pr-10"
             placeholder="Masukkan password saat ini"
           />
           <button
             type="button"
             onClick={() => togglePasswordVisibility("current")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#74512D] hover: text-[#4E1F00]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#74512D] hover:text-[#4E1F00]"
           >
             {showPasswords.current ? (
               <EyeOff className="h-4 w-4" />
@@ -86,9 +86,9 @@ export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
         <div className="relative">
           <Input
             id="newPassword"
-            type={showPasswords. new ? "text" : "password"}
+            type={showPasswords.new ? "text" : "password"}
             {...register("newPassword")}
-            className="border-[#E3D9BD] focus:border-[#FEBA17] focus: ring-[#FEBA17] pr-10"
+            className="border-[#E3D9BD] focus:border-[#FEBA17] focus:ring-[#FEBA17] pr-10"
             placeholder="Minimal 8 karakter"
           />
           <button
@@ -116,7 +116,7 @@ export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
         <div className="relative">
           <Input
             id="confirmPassword"
-            type={showPasswords.confirm ? "text" :  "password"}
+            type={showPasswords.confirm ? "text" : "password"}
             {...register("confirmPassword")}
             className="border-[#E3D9BD] focus:border-[#FEBA17] focus:ring-[#FEBA17] pr-10"
             placeholder="Ulangi password baru"

@@ -128,16 +128,23 @@ export const sellerOrderService = {
   },
 
   // Update order status (seller)
-  async updateOrderStatus(orderId: number, status: OrderStatus): Promise<Order> {
-    const response = await fetchWithAuth<ApiResponse<Order>>(
-      `/orders/${orderId}/status`,
-      {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      }
-    );
-    return response.data!;
-  },
+  async updateOrderStatus(
+      orderId: number,
+      status: OrderStatus,
+      reason?: string
+    ): Promise<Order> {
+      const response = await fetchWithAuth<ApiResponse<Order>>(
+        `/orders/${orderId}/status`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            status,
+            ...(reason && { reason })
+          }),
+        }
+      );
+      return response.data!;
+    },
 
   // Confirm order (seller)
   async confirmOrder(orderId: number): Promise<Order> {

@@ -48,7 +48,14 @@ class ApiClient {
         if (error.response?.status === 401) {
           this.clearToken();
           if (typeof window !== "undefined") {
-            window.location.href = "/login";
+            // Jangan redirect jika sudah di halaman auth untuk menghindari loop
+            const currentPath = window.location.pathname;
+            const isAuthPage = currentPath.startsWith("/login") ||
+                               currentPath.startsWith("/register") ||
+                               currentPath.startsWith("/auth");
+            if (!isAuthPage) {
+              window.location.href = "/login";
+            }
           }
         }
 

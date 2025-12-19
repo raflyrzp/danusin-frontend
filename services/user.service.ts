@@ -2,9 +2,7 @@ import { User, ApiResponse } from "@/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
-// ============================================
 // FETCH HELPER
-// ============================================
 async function fetchWithAuth<T>(
   endpoint: string,
   options: RequestInit = {}
@@ -28,9 +26,7 @@ async function fetchWithAuth<T>(
   return response.json();
 }
 
-// ============================================
 // USER SERVICE
-// ============================================
 export const userService = {
   // Get current user profile
   async getMyProfile(): Promise<User> {
@@ -90,8 +86,9 @@ export const userService = {
 
   // Upgrade to seller
   async upgradeToSeller(data: {
+    store_name: string;
+    description?: string;
     whatsapp: string;
-    student_proof_url:  string;
   }): Promise<void> {
     await fetchWithAuth("/users/me/upgrade-seller", {
       method: "POST",
@@ -110,35 +107,56 @@ export const userService = {
   },
 };
 
-// ============================================
 // UPLOAD SERVICE
-// ============================================
 export const uploadService = {
-  // Upload image
+  // Upload image - backend expects field name 'image'
   async uploadImage(file: File): Promise<string> {
     const token = localStorage.getItem("token");
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("image", file);
 
     const response = await fetch(`${API_BASE_URL}/upload`, {
-      method:  "POST",
+      method: "POST",
       headers: {
         ...(token && { Authorization: `Bearer ${token}` }),
       },
-      body:  formData,
+      body: formData,
     });
 
     if (!response.ok) {
-      throw new Error("Gagal mengupload gambar");
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Gagal mengupload gambar");
     }
 
-    const data = await response. json();
-    return data.data.url;
+    const data = await response.json();
+
+    // Backend returns { data: { image_url: "/uploads/xxx.jpg" } }
+    const imageUrl = data?.data?.image_url;
+
+    if (!imageUrl || typeof imageUrl !== "string") {
+      console.error("Invalid upload response:", data);
+      throw new Error("Response upload tidak valid");
+    }
+
+    // Return full URL (prepend API base if relative path)
+    if (imageUrl.startsWith("/")) {
+      // Get base URL without /api/v1 suffix
+      const baseUrl = API_BASE_URL.replace(/\/api\/v1$/, "").replace(/\/api$/, "");
+      return `${baseUrl}${imageUrl}`;
+    }
+
+    return imageUrl;
   },
 
   // Upload multiple images
   async uploadImages(files: File[]): Promise<string[]> {
-    const uploadPromises = files. map((file) => this.uploadImage(file));
-    return Promise.all(uploadPromises);
+    const uploadedUrls: string[] = [];
+
+    for (const file of files) {
+      const url = await this.uploadImage(file);
+      uploadedUrls.push(url);
+    }
+
+    return uploadedUrls;
   },
 };

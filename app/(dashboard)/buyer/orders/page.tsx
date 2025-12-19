@@ -15,10 +15,10 @@ import {
 
 const statusOptions: { value: OrderStatus | "all"; label: string }[] = [
   { value: "all", label: "Semua Status" },
-  { value: "Menunggu Konfirmasi", label:  "Menunggu Konfirmasi" },
+  { value: "Menunggu Konfirmasi", label: "Menunggu Konfirmasi" },
   { value: "Diproses", label: "Diproses" },
   { value: "Selesai", label: "Selesai" },
-  { value: "Dibatalkan", label:  "Dibatalkan" },
+  { value: "Dibatalkan", label: "Dibatalkan" },
 ];
 
 export default function OrdersPage() {
@@ -26,7 +26,7 @@ export default function OrdersPage() {
   const { orders, isLoading, pagination, setPage, setStatus, currentStatus } = useOrders();
 
   const handleBuyAgain = (order: Order) => {
-    router. push(`/products/${order.product_id}`);
+    router.push(`/products/${order.product_id}`);
   };
 
   const handleContactSeller = (order: Order) => {
@@ -49,7 +49,7 @@ export default function OrdersPage() {
         <h1 className="text-xl font-bold text-[#4E1F00]">Pesananku</h1>
 
         {/* Filter */}
-        <Select
+        {/*<Select
           value={currentStatus || "all"}
           onValueChange={handleStatusChange}
         >
@@ -59,11 +59,11 @@ export default function OrdersPage() {
           <SelectContent>
             {statusOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {option. label}
+                {option.label}
               </SelectItem>
             ))}
           </SelectContent>
-        </Select>
+        </Select>*/}
       </div>
 
       {/* Order List */}

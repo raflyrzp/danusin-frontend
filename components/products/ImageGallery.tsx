@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Store } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, getImageUrl } from "@/lib/utils";
 import type { Image as ImageType } from "@/types";
-import Image from "next/image";
+import { SafeImage } from "@/components/ui/safe-image";
 
 interface ImageGalleryProps {
   images: ImageType[];
@@ -21,7 +21,8 @@ export function ImageGallery({
 
   const cleanUrl = (url: string) => {
       if (!url) return "";
-      return url.replace(/\s/g, "");
+      const resolved = getImageUrl(url);
+      return resolved ? resolved.replace(/\s/g, "") : "";
     };
 
   let displayImages: { id: number; url: string; alt_text: string | null }[] = [];
@@ -62,7 +63,7 @@ export function ImageGallery({
     <div className="space-y-4">
       {/* Main Image */}
       <div className="group relative aspect-square w-full overflow-hidden rounded-2xl bg-[#F1E7C9]">
-        <Image
+        <SafeImage
           src={cleanUrl(displayImages[activeIndex].url)}
           alt={
             displayImages[activeIndex].alt_text ||
@@ -72,6 +73,11 @@ export function ImageGallery({
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           priority
+          fallback={
+            <div className="flex h-full w-full items-center justify-center text-[#B4A98C]">
+              <Store className="h-24 w-24 opacity-50" />
+            </div>
+          }
         />
 
         {/* Navigation Arrows */}
@@ -119,7 +125,7 @@ export function ImageGallery({
                   : "opacity-60 hover:opacity-100"
               )}
             >
-              <Image
+              <SafeImage
                 src={cleanUrl(image.url)}
                 alt={image.alt_text || `Thumbnail ${index + 1}`}
                 fill

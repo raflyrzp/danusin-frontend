@@ -7,7 +7,7 @@ import { Loader2, ShoppingBag } from "lucide-react";
 
 interface OrderListProps {
   orders: Order[];
-  isLoading:  boolean;
+  isLoading: boolean;
   onBuyAgain?: (order: Order) => void;
   onContactSeller?: (order: Order) => void;
 }

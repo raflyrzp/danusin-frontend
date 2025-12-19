@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { MapPin, Store, MessageCircle } from "lucide-react";
+import { SafeImage } from "@/components/ui/safe-image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn, getImageUrl } from "@/lib/utils";
 import { Order, OrderStatus } from "@/types";
 
 const statusConfig: Record<OrderStatus, { label: string; className: string }> = {
@@ -29,7 +29,7 @@ const statusConfig: Record<OrderStatus, { label: string; className: string }> = 
 
 interface OrderCardProps {
   order: Order;
-  onBuyAgain?:  (order: Order) => void;
+  onBuyAgain?: (order: Order) => void;
   onContactSeller?: (order: Order) => void;
 }
 
@@ -38,13 +38,13 @@ export function OrderCard({ order, onBuyAgain, onContactSeller }: OrderCardProps
     return new Date(dateString).toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",
-      year:  "numeric",
+      year: "numeric",
     });
   };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("id-ID", {
-      style:  "currency",
+      style: "currency",
       currency: "IDR",
       minimumFractionDigits: 0,
     }).format(price);
@@ -55,7 +55,7 @@ export function OrderCard({ order, onBuyAgain, onContactSeller }: OrderCardProps
       const message = encodeURIComponent(
         `Halo, saya ingin bertanya tentang pesanan #${order.id} (${order.product_name})`
       );
-      window.open(`https://wa.me/${order.seller_whatsapp. replace(/^0/, "62")}?text=${message}`, "_blank");
+      window.open(`https://wa.me/${order.seller_whatsapp.replace(/^0/, "62")}?text=${message}`, "_blank");
     }
     onContactSeller?.(order);
   };
@@ -68,18 +68,23 @@ export function OrderCard({ order, onBuyAgain, onContactSeller }: OrderCardProps
           <div className="flex gap-4">
             {/* Product Image */}
             <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-              <Image
-                src={order. product_image || "/placeholder. jpg"}
+              <SafeImage
+                src={getImageUrl(order.product_image) || "/placeholder.jpg"}
                 alt={order.product_name || "Product"}
                 fill
                 className="object-cover"
+                fallback={
+                  <div className="flex h-full w-full items-center justify-center text-gray-400">
+                    <Store className="h-8 w-8 opacity-50" />
+                  </div>
+                }
               />
             </div>
 
             {/* Product Info */}
             <div>
               <h3 className="font-semibold text-[#4E1F00]">
-                {order. product_name} ({order.quantity})
+                {order.product_name} ({order.quantity})
               </h3>
               {order.seller_name && (
                 <div className="flex items-center gap-1 text-xs text-[#74512D] mt-1">

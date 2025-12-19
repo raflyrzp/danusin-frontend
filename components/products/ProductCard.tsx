@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Store } from "lucide-react";
-import { formatPrice, cn } from "@/lib/utils";
+import { formatPrice, cn, getImageUrl } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { Product } from "@/types";
 import { ROUTES } from "@/constants/routes";
-import Image from "next/image";
+import { SafeImage } from "@/components/ui/safe-image";
 
 function StatusBadge({ isOpen }: { isOpen: boolean }) {
   return (
@@ -41,28 +41,25 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   }, [product.po_close_date]);
 
-  const imageUrl = product.primary_image
-    ? product.primary_image.replace(/\s/g, "")
-    : null;
+  const imageUrl = getImageUrl(product.primary_image);
 
   return (
     <Link href={ROUTES.PRODUCT_DETAIL(product.id)}>
       <Card className="group relative h-full overflow-hidden border border-[#F3E6C5] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(78,31,0,0.1)]">
         {/* Image */}
         <div className="relative aspect-square w-full overflow-hidden bg-[#F1E7C9]">
-          {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt={product.name}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-[#B4A98C]">
-              <Store className="h-12 w-12 opacity-50" />
-            </div>
-          )}
+          <SafeImage
+            src={imageUrl}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            fallback={
+              <div className="flex h-full w-full items-center justify-center text-[#B4A98C]">
+                <Store className="h-12 w-12 opacity-50" />
+              </div>
+            }
+          />
           {mounted && <StatusBadge isOpen={isOpen} />}
         </div>
 

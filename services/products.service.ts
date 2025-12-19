@@ -53,14 +53,45 @@ export const productsService = {
    * Create new product (seller only)
    */
   create: async (data: CreateProductDTO) => {
-    return await apiClient.post<Product>("/products", data);
+    const cleanData = {
+      ...data,
+      images: data.images?.filter((url): url is string =>
+        typeof url === "string" && url.trim().length > 0
+      ),
+    };
+
+    if (!cleanData.images || cleanData.images.length === 0) {
+      delete cleanData.images;
+    }
+
+    return await apiClient.post<Product>("/products", cleanData);
   },
 
   /**
    * Update product (seller only)
    */
   update: async (id: number | string, data: UpdateProductDTO) => {
-    return await apiClient.put<Product>(`/products/${id}`, data);
+    const cleanData = { ...data };
+
+    if (cleanData.images) {
+      cleanData.images = cleanData.images.filter((url): url is string =>
+        typeof url === "string" && url.trim().length > 0
+      );
+      if (cleanData.images.length === 0) {
+        delete cleanData.images;
+      }
+    }
+
+    if (cleanData.add_images) {
+      cleanData.add_images = cleanData.add_images.filter((url): url is string =>
+        typeof url === "string" && url.trim().length > 0
+      );
+      if (cleanData.add_images.length === 0) {
+        delete cleanData.add_images;
+      }
+    }
+
+    return await apiClient.put<Product>(`/products/${id}`, cleanData);
   },
 
   /**

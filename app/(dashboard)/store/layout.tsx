@@ -6,7 +6,7 @@ import { Sidebar } from "@/components/dashboard/Sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 
-export default function BuyerLayout({
+export default function StoreLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -18,7 +18,11 @@ export default function BuyerLayout({
     if (!isLoading && !isAuthenticated) {
       router.push("/login");
     }
-  }, [isLoading, isAuthenticated, router]);
+    // Redirect buyers to create store page
+    if (!isLoading && user?.role === "buyer") {
+      router.push("/buyer/create-store");
+    }
+  }, [isLoading, isAuthenticated, user, router]);
 
   if (isLoading) {
     return (
@@ -28,14 +32,14 @@ export default function BuyerLayout({
     );
   }
 
-  if (!user) {
+  if (!user || user.role !== "seller") {
     return null;
   }
 
   return (
     <div className="min-h-screen bg-[#F8F4E1]">
       <div className="flex">
-        <Sidebar user={user} userImage={user.profile_image} variant="buyer" />
+        <Sidebar user={user} userImage={user.profile_image} variant="store" />
         <main className="flex-1 p-6">{children}</main>
       </div>
     </div>

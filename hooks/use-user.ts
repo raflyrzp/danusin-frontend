@@ -99,12 +99,12 @@ export function useUser() {
     }
   };
 
-  const upgradeToSeller = async (whatsapp: string, studentProofFile: File) => {
+  const upgradeToSeller = async (storeName: string, description: string, whatsapp: string) => {
     try {
-      const studentProofUrl = await uploadService.uploadImage(studentProofFile);
       await userService.upgradeToSeller({
+        store_name: storeName,
+        description,
         whatsapp,
-        student_proof_url: studentProofUrl,
       });
       await fetchUser();
       toast.success("Berhasil upgrade ke seller!  Menunggu verifikasi.");

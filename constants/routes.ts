@@ -4,9 +4,9 @@ export const ROUTES = {
   REGISTER: "/register",
   PRODUCTS: "/products",
   PRODUCT_DETAIL: (id: number | string) => `/products/${id}`,
-  PROFILE: "/profile",
+  // PROFILE: "/profile",
   DASHBOARD: {
-    BUYER: "/dashboard/buyer",
-    SELLER: "/dashboard/seller",
+    BUYER: "/buyer/profile",
+    SELLER: "/seller/profile",
   },
 } as const;
