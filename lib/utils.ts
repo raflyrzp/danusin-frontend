@@ -9,30 +9,30 @@ export function cn(...inputs: ClassValue[]) {
  * Resolve image URL - converts relative paths to full URLs
  * Backend returns paths like "/uploads/xxx.jpg"
  */
- // === BAGIAN INI YANG PENTING ===
  export function getImageUrl(url: string | null | undefined): string | null {
    if (!url) return null;
 
    const trimmed = url.trim();
    if (!trimmed) return null;
 
-   // Jika URL sudah lengkap (misal dari Google/Unsplash), kembalikan langsung
-   if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
-     return trimmed;
+   // Hapus semua spasi
+   const noSpaces = trimmed.replace(/\s+/g, "");
+
+   // 1. Cek apakah ini URL eksternal (misal dari Google/Unsplash)
+   if (noSpaces.startsWith("http://") || noSpaces.startsWith("https://")) {
+     return noSpaces;
    }
 
-   // Tentukan Base URL Backend secara Manual
-   // PENTING: Ganti 3001 dengan port backend Express Anda (bisa 3001, 5000, atau 8080)
-   // Cek file .env frontend Anda untuk memastikannya
-   const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
+   // 2. HARDCODE URL BACKEND DI SINI
+   // Ini memaksa semua gambar lokal mengambil dari port 3001
+   const backendBaseUrl = "http://localhost:3001";
 
-   // Pastikan path diawali dengan slash
-   const cleanPath = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+   // Pastikan path diawali dengan slash "/"
+   const cleanPath = noSpaces.startsWith("/") ? noSpaces : `/${noSpaces}`;
 
-   // Gabungkan: http://localhost:3001 + /uploads/gambar.jpg
+   // Hasil: http://localhost:3001/uploads/nama-file.jpg
    return `${backendBaseUrl}${cleanPath}`;
  }
- // ===============================
 
 /**
  * Check if URL is a localhost/local IP URL

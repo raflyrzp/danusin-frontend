@@ -8,8 +8,8 @@ import { Footer } from "@/components/layout/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Danus.in - Platform Pre-Order Mahasiswa",
-  description: "Cari dan jual makanan danusan di kampusmu.",
+  title: "Danus.in - Platform Danusan Mahasiswa",
+  description: "Cari dan jual produk danusan di kampusmu.",
 };
 
 export default function RootLayout({
