@@ -85,7 +85,7 @@ export function RegisterForm() {
         </div>
       )}
 
-      {/* Nama & NIM */}
+      {/* Nama & NIM (Tetap 2 kolom / grid) */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="name">Nama Lengkap</Label>
@@ -95,7 +95,7 @@ export function RegisterForm() {
               id="name"
               disabled={isPending}
               className="border-0 px-0 shadow-none focus-visible:ring-0"
-              placeholder="John Doe"
+              placeholder="Fulan"
               {...register("name")}
             />
           </div>
@@ -114,7 +114,7 @@ export function RegisterForm() {
               id="nim"
               disabled={isPending}
               className="border-0 px-0 shadow-none focus-visible:ring-0"
-              placeholder="2108xxxx"
+              placeholder="1313xxxx"
               {...register("nim")}
             />
           </div>
@@ -126,7 +126,7 @@ export function RegisterForm() {
         </div>
       </div>
 
-      {/* Email & WA */}
+      {/* Email */}
       <div className="space-y-1.5">
         <Label htmlFor="email">Email</Label>
         <div className="flex items-center rounded-lg border border-[#E5DEC5] bg-white px-3 shadow-sm focus-within:ring-2 focus-within:ring-[#FEBA17] focus-within:ring-offset-1">
@@ -147,6 +147,7 @@ export function RegisterForm() {
         )}
       </div>
 
+      {/* WhatsApp */}
       <div className="space-y-1.5">
         <Label htmlFor="whatsapp">WhatsApp</Label>
         <div className="flex items-center rounded-lg border border-[#E5DEC5] bg-white px-3 shadow-sm focus-within:ring-2 focus-within:ring-[#FEBA17] focus-within:ring-offset-1">
@@ -167,53 +168,76 @@ export function RegisterForm() {
         )}
       </div>
 
-      {/* Akademik: Fakultas, Jurusan, Angkatan */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label>Fakultas</Label>
-          <Select
-            onValueChange={(val) => setValue("faculty", val)}
-            disabled={isPending}
-          >
-            <SelectTrigger className="border-[#E5DEC5] bg-white focus:ring-[#FEBA17]">
-              <div className="flex items-center">
-                <Building2 className="mr-2 h-4 w-4 text-[#B4A98C]" />
-                <SelectValue placeholder="Pilih Fakultas" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Teknik">Teknik</SelectItem>
-              <SelectItem value="Ekonomi">Ekonomi</SelectItem>
-              <SelectItem value="MIPA">MIPA</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.faculty && (
-            <p className="text-xs text-red-600">
-              {errors.faculty.message as string}
-            </p>
-          )}
-        </div>
+      {/* --- BAGIAN AKADEMIK (DIUBAH KE SINGLE ROW) --- */}
 
-        <div className="space-y-1.5">
-          <Label>Jurusan</Label>
-          <div className="flex items-center rounded-lg border border-[#E5DEC5] bg-white px-3 shadow-sm focus-within:ring-2 focus-within:ring-[#FEBA17]">
-            <BookOpen className="mr-2 h-4 w-4 text-[#B4A98C]" />
-            <Input
-              id="major"
-              disabled={isPending}
-              className="border-0 px-0 shadow-none focus-visible:ring-0"
-              placeholder="Informatika"
-              {...register("major")}
-            />
-          </div>
-          {errors.major && (
-            <p className="text-xs text-red-600">
-              {errors.major.message as string}
-            </p>
-          )}
-        </div>
+      {/* Row 1: Fakultas */}
+      <div className="space-y-1.5">
+        <Label>Fakultas</Label>
+        <Select
+          onValueChange={(val) => setValue("faculty", val)}
+          disabled={isPending}
+        >
+          <SelectTrigger className="border-[#E5DEC5] bg-white focus:ring-[#FEBA17] w-full">
+            <div className="flex items-center">
+              <Building2 className="mr-2 h-4 w-4 text-[#B4A98C]" />
+              <SelectValue placeholder="Pilih Fakultas" />
+            </div>
+          </SelectTrigger>
+          <SelectContent className="bg-white">
+            <SelectItem value="FIP" className="hover:bg-[#E5DEC5]">
+              Fakultas Ilmu Pendidikan (FIP)
+            </SelectItem>
+            <SelectItem value="FBS" className="hover:bg-[#E5DEC5]">
+              Fakultas Bahasa dan Seni (FBS)
+            </SelectItem>
+            <SelectItem value="FMIPA" className="hover:bg-[#E5DEC5]">
+              Fakultas Matematika dan Ilmu Pengetahuan Alam (FMIPA)
+            </SelectItem>
+            <SelectItem value="FIS" className="hover:bg-[#E5DEC5]">
+              Fakultas Ilmu Sosial dan Hukum (FISH)
+            </SelectItem>
+            <SelectItem value="FIO" className="hover:bg-[#E5DEC5]">
+              Fakultas Ilmu Olahraga (FIO)
+            </SelectItem>
+            <SelectItem value="FT" className="hover:bg-[#E5DEC5]">
+              Fakultas Teknik (FT)
+            </SelectItem>
+            <SelectItem value="FE" className="hover:bg-[#E5DEC5]">
+              Fakultas Ekonomi (FE)
+            </SelectItem>
+            <SelectItem value="FPPsi" className="hover:bg-[#E5DEC5]">
+              Fakultas Pendidikan Psikologi (FPPsi)
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        {errors.faculty && (
+          <p className="text-xs text-red-600">
+            {errors.faculty.message as string}
+          </p>
+        )}
       </div>
 
+      {/* Row 2: Jurusan */}
+      <div className="space-y-1.5">
+        <Label>Jurusan</Label>
+        <div className="flex items-center rounded-lg border border-[#E5DEC5] bg-white px-3 shadow-sm focus-within:ring-2 focus-within:ring-[#FEBA17]">
+          <BookOpen className="mr-2 h-4 w-4 text-[#B4A98C]" />
+          <Input
+            id="major"
+            disabled={isPending}
+            className="border-0 px-0 shadow-none focus-visible:ring-0"
+            placeholder="Informatika"
+            {...register("major")}
+          />
+        </div>
+        {errors.major && (
+          <p className="text-xs text-red-600">
+            {errors.major.message as string}
+          </p>
+        )}
+      </div>
+
+      {/* Row 3: Angkatan */}
       <div className="space-y-1.5">
         <Label htmlFor="batch_year">Angkatan</Label>
         <div className="flex items-center rounded-lg border border-[#E5DEC5] bg-white px-3 shadow-sm focus-within:ring-2 focus-within:ring-[#FEBA17]">
@@ -234,7 +258,9 @@ export function RegisterForm() {
         )}
       </div>
 
-      {/* Password */}
+      {/* --- AKHIR BAGIAN AKADEMIK --- */}
+
+      {/* Password (Tetap 2 kolom / grid) */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="password">Password</Label>
