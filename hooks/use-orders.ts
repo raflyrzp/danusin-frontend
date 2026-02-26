@@ -42,7 +42,9 @@ export function useOrders(): UseOrdersReturn {
         params.append("status", status);
       }
 
-      const response = await apiClient.get<Order[]>(`/orders/me`);
+      const response = await apiClient.get<Order[]>(
+        `/orders/me?${params.toString()}`,
+      );
       setOrders(response.data || []);
 
       if (response.meta) {
@@ -102,7 +104,7 @@ export function useStoreOrders() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get<Order[]>("/orders/seller");
+      const response = await apiClient.get<Order[]>("/orders/seller/incoming");
       setOrders(response.data || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal memuat pesanan");

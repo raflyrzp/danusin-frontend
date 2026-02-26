@@ -4,13 +4,13 @@ import type { Image } from "@/types";
 export interface CreateImageDTO {
   url: string;
   alt_text?: string;
-  entity_type: "product" | "user";
+  entity_type: "product" | "user" | "store";
   entity_id: number;
   is_primary?: boolean;
 }
 
 export interface BulkCreateImagesDTO {
-  entity_type: "product" | "user";
+  entity_type: "product" | "user" | "store";
   entity_id: number;
   images: Array<{
     url: string;
@@ -23,7 +23,10 @@ export const imagesService = {
   /**
    * Get images by entity
    */
-  getByEntity: async (entityType: "product" | "user", entityId: number) => {
+  getByEntity: async (
+    entityType: "product" | "user" | "store",
+    entityId: number,
+  ) => {
     return await apiClient.get<{ images: Image[] }>("/images", {
       params: { entity_type: entityType, entity_id: entityId },
     });
@@ -33,7 +36,7 @@ export const imagesService = {
    * Get image by ID
    */
   getById: async (id: number) => {
-    return await apiClient. get<{ image: Image }>(`/images/${id}`);
+    return await apiClient.get<{ image: Image }>(`/images/${id}`);
   },
 
   /**
@@ -54,7 +57,7 @@ export const imagesService = {
    * Update image
    */
   update: async (id: number, data: Partial<CreateImageDTO>) => {
-    return await apiClient. put<{ image: Image }>(`/images/${id}`, data);
+    return await apiClient.put<{ image: Image }>(`/images/${id}`, data);
   },
 
   /**
@@ -74,7 +77,11 @@ export const imagesService = {
   /**
    * Reorder images
    */
-  reorder: async (entityType: "product" | "user", entityId: number, imageIds: number[]) => {
+  reorder: async (
+    entityType: "product" | "user",
+    entityId: number,
+    imageIds: number[],
+  ) => {
     return await apiClient.post("/images/reorder", {
       entity_type: entityType,
       entity_id: entityId,

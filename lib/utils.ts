@@ -9,30 +9,30 @@ export function cn(...inputs: ClassValue[]) {
  * Resolve image URL - converts relative paths to full URLs
  * Backend returns paths like "/uploads/xxx.jpg"
  */
- export function getImageUrl(url: string | null | undefined): string | null {
-   if (!url) return null;
+export function getImageUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
 
-   const trimmed = url.trim();
-   if (!trimmed) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
 
-   // Hapus semua spasi
-   const noSpaces = trimmed.replace(/\s+/g, "");
+  // Hapus semua spasi
+  const noSpaces = trimmed.replace(/\s+/g, "");
 
-   // 1. Cek apakah ini URL eksternal (misal dari Google/Unsplash)
-   if (noSpaces.startsWith("http://") || noSpaces.startsWith("https://")) {
-     return noSpaces;
-   }
+  // 1. Cek apakah ini URL eksternal (misal dari Google/Unsplash)
+  if (noSpaces.startsWith("http://") || noSpaces.startsWith("https://")) {
+    return noSpaces;
+  }
 
-   // 2. HARDCODE URL BACKEND DI SINI
-   // Ini memaksa semua gambar lokal mengambil dari port 3001
-   const backendBaseUrl = "http://localhost:3001";
+  // 2. HARDCODE URL BACKEND DI SINI
+  // Ini memaksa semua gambar lokal mengambil dari port 3000
+  const backendBaseUrl = "http://localhost:3000";
 
-   // Pastikan path diawali dengan slash "/"
-   const cleanPath = noSpaces.startsWith("/") ? noSpaces : `/${noSpaces}`;
+  // Pastikan path diawali dengan slash "/"
+  const cleanPath = noSpaces.startsWith("/") ? noSpaces : `/${noSpaces}`;
 
-   // Hasil: http://localhost:3001/uploads/nama-file.jpg
-   return `${backendBaseUrl}${cleanPath}`;
- }
+  // Hasil: http://localhost:3001/uploads/nama-file.jpg
+  return `${backendBaseUrl}${cleanPath}`;
+}
 
 /**
  * Check if URL is a localhost/local IP URL
@@ -43,14 +43,12 @@ export function isLocalUrl(url: string | null | undefined): boolean {
   if (!url) return false;
   const s = url.trim().replace(/\s+/g, "");
   return (
-    s.includes("localhost") ||
-    s.includes("127.0.0.1") ||
-    s.includes("::1")
+    s.includes("localhost") || s.includes("127.0.0.1") || s.includes("::1")
   );
 }
 
 export function formatPrice(price: number): string {
-  return new Intl. NumberFormat("id-ID", {
+  return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     minimumFractionDigits: 0,

@@ -35,12 +35,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DashboardMenu } from "./DashboardMenu";
 import { UserMenu } from "./UserMenu";
+import { NotificationBell } from "./NotificationBell";
 import { useAuth, useLogout } from "@/hooks/use-auth";
 import { logoutAction } from "@/actions/auth/logout";
 
 const navLinks = [
   { label: "Beranda", href: ROUTES.HOME, icon: Home },
-  // { label: "Menu Jajanan", href: ROUTES.PRODUCTS, icon: UtensilsCrossed },
+  { label: "Menu Jajanan", href: ROUTES.PRODUCTS, icon: UtensilsCrossed },
 ];
 
 interface NavbarProps {
@@ -133,7 +134,7 @@ export function Navbar({
                     "flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200",
                     active
                       ? "bg-[#4E1F00] text-[#F8F4E1] shadow-md"
-                      : "text-[#4E1F00] hover:bg-[#4E1F00]/10"
+                      : "text-[#4E1F00] hover:bg-[#4E1F00]/10",
                   )}
                 >
                   <Icon className="h-4 w-4" />
@@ -150,33 +151,7 @@ export function Navbar({
           {isAuthenticated ? (
             <>
               {/* Notifications */}
-              {/*<Button
-                variant="ghost"
-                size="icon"
-                className="relative rounded-xl text-[#4E1F00] hover:bg-[#4E1F00]/10 h-10 w-10"
-                aria-label="Notifikasi"
-                asChild
-              >
-                <Link href="/notifications">
-                  <Bell className="h-5 w-5" />
-                  <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center">
-                    3
-                  </span>
-                </Link>
-              </Button>*/}
-
-              {/* Cart */}
-              {/*<Button
-                variant="ghost"
-                size="icon"
-                className="relative rounded-xl text-[#4E1F00] hover:bg-[#4E1F00]/10 h-10 w-10"
-                aria-label="Keranjang"
-                asChild
-              >
-                <Link href="/cart">
-                  <ShoppingCart className="h-5 w-5" />
-                </Link>
-              </Button>*/}
+              <NotificationBell />
 
               {/* User Menu */}
               <UserMenu
@@ -291,7 +266,7 @@ export function Navbar({
                           "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all",
                           active
                             ? "bg-[#FEBA17] text-[#4E1F00] shadow-md"
-                            : "text-[#4E1F00] hover:bg-[#FEBA17]/20"
+                            : "text-[#4E1F00] hover:bg-[#FEBA17]/20",
                         )}
                       >
                         <Icon className="h-5 w-5" />
@@ -302,55 +277,46 @@ export function Navbar({
                 </div>
 
                 {/* Authenticated Menu Items */}
-                {/*{isAuthenticated && (
+                {isAuthenticated && (
                   <div className="space-y-1">
                     <p className="text-xs font-semibold text-[#B4A98C] uppercase tracking-wider px-3 mb-2">
                       Akun
                     </p>
                     <Link
-                      href="/notifications"
+                      href={ROUTES.NOTIFICATIONS}
                       onClick={() => setOpen(false)}
                       className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#4E1F00] hover:bg-[#FEBA17]/20"
                     >
                       <Bell className="h-5 w-5" />
                       Notifikasi
-                      <span className="ml-auto px-2 py-0.5 text-xs bg-red-500 text-white rounded-full">
-                        3
-                      </span>
                     </Link>
+                  </div>
+                )}
+
+                {/* Dashboard Links */}
+                {isAuthenticated && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-[#B4A98C] uppercase tracking-wider px-3 mb-2">
+                      Dashboard
+                    </p>
                     <Link
-                      href="/cart"
+                      href={ROUTES.DASHBOARD.BUYER}
                       onClick={() => setOpen(false)}
                       className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#4E1F00] hover:bg-[#FEBA17]/20"
                     >
-                      <ShoppingCart className="h-5 w-5" />
-                      Keranjang
+                      <User className="h-5 w-5" />
+                      Dashboard Buyer
+                    </Link>
+                    <Link
+                      href={ROUTES.DASHBOARD.SELLER}
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#4E1F00] hover:bg-[#FEBA17]/20"
+                    >
+                      <Store className="h-5 w-5" />
+                      Dashboard Seller
                     </Link>
                   </div>
-                )}*/}
-
-                {/* Dashboard Links */}
-                {/*<div className="space-y-1">
-                  <p className="text-xs font-semibold text-[#B4A98C] uppercase tracking-wider px-3 mb-2">
-                    Dashboard
-                  </p>
-                  <Link
-                    href={ROUTES.DASHBOARD.BUYER}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#4E1F00] hover:bg-[#FEBA17]/20"
-                  >
-                    <User className="h-5 w-5" />
-                    Dashboard Buyer
-                  </Link>
-                  <Link
-                    href={ROUTES.DASHBOARD.SELLER}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[#4E1F00] hover:bg-[#FEBA17]/20"
-                  >
-                    <Store className="h-5 w-5" />
-                    Dashboard Seller
-                  </Link>
-                </div>*/}
+                )}
 
                 {/* Auth Actions */}
                 <div className="pt-4 border-t border-[#E3D9BD]">
@@ -372,7 +338,10 @@ export function Navbar({
                         className="w-full rounded-xl border-[#4E1F00] text-[#4E1F00] hover:bg-[#FEBA17]/20 h-12 text-sm font-medium"
                         asChild
                       >
-                        <Link href={ROUTES.LOGIN} onClick={() => setOpen(false)}>
+                        <Link
+                          href={ROUTES.LOGIN}
+                          onClick={() => setOpen(false)}
+                        >
                           Masuk
                         </Link>
                       </Button>

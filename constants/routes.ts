@@ -4,9 +4,10 @@ export const ROUTES = {
   REGISTER: "/register",
   PRODUCTS: "/products",
   PRODUCT_DETAIL: (id: number | string) => `/products/${id}`,
-  // PROFILE: "/profile",
+  PROFILE: "/buyer/profile",
+  NOTIFICATIONS: "/buyer/notifications",
   DASHBOARD: {
     BUYER: "/buyer/profile",
-    SELLER: "/seller/profile",
+    SELLER: "/store",
   },
 } as const;

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface FilterSidebarProps {
   onFilterChange: (filters: {
@@ -12,17 +12,24 @@ interface FilterSidebarProps {
   }) => void;
 }
 
-const DAYS = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-const LOCATIONS = ['Kampus A', 'Kampus B'];
+const DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+const LOCATIONS = [
+  "Kampus A",
+  "Kampus B",
+  "Kampus C",
+  "Kantin Utama",
+  "Gedung Rektorat",
+];
 
 export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
   const [selectedDays, setSelectedDays] = useState<string[]>(DAYS);
-  const [selectedLocations, setSelectedLocations] = useState<string[]>(LOCATIONS);
+  const [selectedLocations, setSelectedLocations] =
+    useState<string[]>(LOCATIONS);
 
   const handleDayToggle = (day: string) => {
     const newDays = selectedDays.includes(day)
-      ?  selectedDays.filter((d) => d !== day)
+      ? selectedDays.filter((d) => d !== day)
       : [...selectedDays, day];
     setSelectedDays(newDays);
     onFilterChange({
@@ -35,12 +42,12 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
 
   const handleLocationToggle = (location: string) => {
     const newLocations = selectedLocations.includes(location)
-      ?  selectedLocations.filter((l) => l !== location)
+      ? selectedLocations.filter((l) => l !== location)
       : [...selectedLocations, location];
     setSelectedLocations(newLocations);
     onFilterChange({
       minPrice: priceRange.min,
-      maxPrice: priceRange. max,
+      maxPrice: priceRange.max,
       days: selectedDays,
       locations: newLocations,
     });
@@ -64,7 +71,7 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
         <div className="mb-2 flex items-center justify-between text-sm">
           <span className="font-medium text-[#4E1F00]">Harga</span>
           <span className="text-xs text-[#74512D]">
-            Rp0-{priceRange.max. toLocaleString('id-ID')}
+            Rp0-{priceRange.max.toLocaleString("id-ID")}
           </span>
         </div>
         <input
@@ -72,8 +79,8 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
           min={0}
           max={100000}
           step={5000}
-          value={priceRange. max}
-          onChange={(e) => handlePriceChange(Number(e.target. value))}
+          value={priceRange.max}
+          onChange={(e) => handlePriceChange(Number(e.target.value))}
           className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-[#F1E7C9] accent-[#FEBA17]"
         />
       </div>
@@ -101,7 +108,9 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
 
       {/* Location Filter */}
       <div>
-        <p className="mb-2 text-sm font-medium text-[#4E1F00]">Lokasi Pengambilan</p>
+        <p className="mb-2 text-sm font-medium text-[#4E1F00]">
+          Lokasi Pengambilan
+        </p>
         <div className="space-y-1.5">
           {LOCATIONS.map((location) => (
             <label
@@ -110,7 +119,7 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             >
               <input
                 type="checkbox"
-                checked={selectedLocations. includes(location)}
+                checked={selectedLocations.includes(location)}
                 onChange={() => handleLocationToggle(location)}
                 className="h-4 w-4 rounded border-[#E5DEC5] text-[#FEBA17] focus:ring-[#FEBA17]"
               />

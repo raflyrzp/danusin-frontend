@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowLeft,
   User as UserIcon,
@@ -11,11 +11,14 @@ import {
   ChevronRight,
   LogOut,
   LayoutDashboard,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { User } from "@/types";
+import { useLogout } from "@/hooks/use-auth";
+import { logoutAction } from "@/actions/auth/logout";
 
 interface SidebarItem {
   label: string;
@@ -39,6 +42,11 @@ const buyerItems: SidebarItem[] = [
     label: "Pesananku",
     href: "/buyer/orders",
     icon: <ShoppingBag className="h-4 w-4" />,
+  },
+  {
+    label: "Notifikasi",
+    href: "/buyer/notifications",
+    icon: <Bell className="h-4 w-4" />,
   },
 ];
 
@@ -74,6 +82,12 @@ export function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
   const isSeller = user?.role === "seller";
+  const { mutate: logout } = useLogout();
+
+  const handleLogout = async () => {
+    logout();
+    await logoutAction();
+  };
 
   // Helper untuk render menu item agar kodenya tidak berulang
   const renderNavItems = (items: SidebarItem[]) => {
@@ -93,7 +107,7 @@ export function Sidebar({
                   "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group",
                   isActiveParent
                     ? "bg-[#FEBA17]/10 text-[#4E1F00]"
-                    : "text-[#74512D] hover:bg-[#F8F4E1] hover:text-[#4E1F00]"
+                    : "text-[#74512D] hover:bg-[#F8F4E1] hover:text-[#4E1F00]",
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -104,7 +118,9 @@ export function Sidebar({
                   <ChevronRight
                     className={cn(
                       "h-3.5 w-3.5 transition-transform duration-200",
-                      isActiveParent ? "rotate-90 text-[#FEBA17]" : "text-[#B4A98C]"
+                      isActiveParent
+                        ? "rotate-90 text-[#FEBA17]"
+                        : "text-[#B4A98C]",
                     )}
                   />
                 )}
@@ -123,7 +139,7 @@ export function Sidebar({
                           "block px-3 py-1.5 rounded-md text-sm transition-colors relative",
                           isActiveChild
                             ? "text-[#4E1F00] font-semibold bg-[#FEBA17]/20"
-                            : "text-[#74512D] hover:text-[#4E1F00] hover:underline decoration-[#FEBA17]/50"
+                            : "text-[#74512D] hover:text-[#4E1F00] hover:underline decoration-[#FEBA17]/50",
                         )}
                       >
                         {child.label}
@@ -192,11 +208,7 @@ export function Sidebar({
         )}
 
         {/* Section: Seller (Hanya jika role seller) */}
-        {isSeller && (
-          <div>
-            {renderNavItems(storeItems)}
-          </div>
-        )}
+        {isSeller && <div>{renderNavItems(storeItems)}</div>}
       </div>
 
       {/* 3. Footer Area: Call to Action */}
@@ -206,7 +218,9 @@ export function Sidebar({
             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:scale-110 transition-transform">
               <Store className="h-16 w-16" />
             </div>
-            <h4 className="font-bold text-sm mb-1 relative z-10">Punya Produk?</h4>
+            <h4 className="font-bold text-sm mb-1 relative z-10">
+              Punya Produk?
+            </h4>
             <p className="text-xs text-[#F8F4E1]/80 mb-3 relative z-10">
               Buka tokomu sekarang dan mulai berjualan di DanusHub.
             </p>
@@ -216,15 +230,14 @@ export function Sidebar({
               className="w-full bg-[#FEBA17] text-[#4E1F00] hover:bg-[#ffcd4f] border-none font-bold text-xs shadow-md relative z-10"
               asChild
             >
-              <Link href="/buyer/create-store">
-                Buat Toko Gratis
-              </Link>
+              <Link href="/buyer/create-store">Buat Toko Gratis</Link>
             </Button>
           </div>
         ) : (
           <Button
             variant="ghost"
             className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 gap-2"
+            onClick={handleLogout}
           >
             <LogOut className="h-4 w-4" />
             Keluar

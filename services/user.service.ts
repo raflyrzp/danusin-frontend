@@ -1,86 +1,49 @@
-import { User, ApiResponse } from "@/types";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
-
-// FETCH HELPER
-async function fetchWithAuth<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const token = localStorage.getItem("token");
-
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers:  {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...options.headers,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Terjadi kesalahan");
-  }
-
-  return response.json();
-}
+import { apiClient } from "@/lib/api-client";
+import { config } from "@/lib/config";
+import type { User, ApiResponse } from "@/types";
 
 // USER SERVICE
 export const userService = {
   // Get current user profile
   async getMyProfile(): Promise<User> {
-    const response = await fetchWithAuth<ApiResponse<User>>("/users/me");
-    return response. data! ;
+    const response = await apiClient.get<User>("/users/me");
+    return response.data!;
   },
 
   // Update profile
   async updateProfile(
-    data: Partial<Pick<User, "name" | "whatsapp">>
+    data: Partial<Pick<User, "name" | "whatsapp">>,
   ): Promise<User> {
-    const response = await fetchWithAuth<ApiResponse<User>>("/users/me", {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    });
-    return response. data!;
+    const response = await apiClient.patch<User>("/users/me", data);
+    return response.data!;
   },
 
   // Update profile image
   async updateProfileImage(imageUrl: string): Promise<User> {
-    const response = await fetchWithAuth<ApiResponse<User>>(
-      "/users/me/profile-image",
-      {
-        method: "PATCH",
-        body: JSON.stringify({ imageUrl }),
-      }
-    );
-    return response.data! ;
+    const response = await apiClient.patch<User>("/users/me/profile-image", {
+      imageUrl,
+    });
+    return response.data!;
   },
 
   // Update email
   async updateEmail(email: string, password: string): Promise<void> {
-    await fetchWithAuth("/users/me/email", {
-      method: "PATCH",
-      body: JSON.stringify({ email, password }),
-    });
+    await apiClient.patch("/users/me/email", { email, password });
   },
 
   // Update whatsapp
   async updateWhatsapp(whatsapp: string): Promise<void> {
-    await fetchWithAuth("/users/me/whatsapp", {
-      method:  "PATCH",
-      body: JSON. stringify({ whatsapp }),
-    });
+    await apiClient.patch("/users/me/whatsapp", { whatsapp });
   },
 
   // Change password
   async changePassword(
     currentPassword: string,
-    newPassword: string
+    newPassword: string,
   ): Promise<void> {
-    await fetchWithAuth("/users/me/password", {
-      method: "PATCH",
-      body: JSON.stringify({ currentPassword, newPassword }),
+    await apiClient.patch("/users/me/password", {
+      currentPassword,
+      newPassword,
     });
   },
 
@@ -90,20 +53,17 @@ export const userService = {
     description?: string;
     whatsapp: string;
   }): Promise<void> {
-    await fetchWithAuth("/users/me/upgrade-seller", {
-      method: "POST",
-      body: JSON. stringify(data),
-    });
+    await apiClient.post("/users/me/upgrade-seller", data);
   },
 
   // Get public profile
   async getPublicProfile(
-    userId: number
+    userId: number,
   ): Promise<User & { active_products_count: number }> {
-    const response = await fetchWithAuth<
-      ApiResponse<User & { active_products_count: number }>
+    const response = await apiClient.get<
+      User & { active_products_count: number }
     >(`/users/${userId}/public-profile`);
-    return response.data! ;
+    return response.data!;
   },
 };
 
@@ -111,11 +71,14 @@ export const userService = {
 export const uploadService = {
   // Upload image - backend expects field name 'image'
   async uploadImage(file: File): Promise<string> {
-    const token = localStorage.getItem("token");
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
     const formData = new FormData();
     formData.append("image", file);
 
-    const response = await fetch(`${API_BASE_URL}/upload`, {
+    const baseUrl = config.api.baseUrl;
+
+    const response = await fetch(`${baseUrl}/upload`, {
       method: "POST",
       headers: {
         ...(token && { Authorization: `Bearer ${token}` }),
@@ -138,11 +101,13 @@ export const uploadService = {
       throw new Error("Response upload tidak valid");
     }
 
-    // Return full URL (prepend API base if relative path)
+    // Return full URL (prepend backend base if relative path)
     if (imageUrl.startsWith("/")) {
       // Get base URL without /api/v1 suffix
-      const baseUrl = API_BASE_URL.replace(/\/api\/v1$/, "").replace(/\/api$/, "");
-      return `${baseUrl}${imageUrl}`;
+      const backendBase = baseUrl
+        .replace(/\/api\/v1$/, "")
+        .replace(/\/api$/, "");
+      return `${backendBase}${imageUrl}`;
     }
 
     return imageUrl;

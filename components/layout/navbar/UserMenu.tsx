@@ -24,7 +24,7 @@ export function UserMenu({
   name = "User",
   email,
   avatarUrl,
-  onLogout
+  onLogout,
 }: UserMenuProps) {
   const initials = name
     .split(" ")
@@ -75,8 +75,11 @@ export function UserMenu({
         <DropdownMenuSeparator className="bg-[#E3D9BD]/50 my-1" />
 
         {/* Menu Profile */}
-        <DropdownMenuItem asChild className="cursor-pointer focus:bg-[#FEBA17]/10 focus:text-[#4E1F00]">
-          <Link href={ROUTES.PROFILE || "/buyer/profile"} className="flex items-center gap-2">
+        <DropdownMenuItem
+          asChild
+          className="cursor-pointer focus:bg-[#FEBA17]/10 focus:text-[#4E1F00]"
+        >
+          <Link href={ROUTES.PROFILE} className="flex items-center gap-2">
             <User className="h-4 w-4 text-[#C2A56F]" />
             <span>Profil Saya</span>
           </Link>
