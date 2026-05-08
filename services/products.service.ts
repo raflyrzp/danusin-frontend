@@ -12,92 +12,25 @@ export interface CreateProductDTO {
   images?: string[];
 }
 
-export interface UpdateProductDTO {
-  name?: string;
-  description?: string;
-  price?: number;
-  stock?: number;
-  po_open_date?: string;
-  po_close_date?: string;
-  delivery_date?: string | null;
-  images?: string[];
+export interface UpdateProductDTO extends Partial<CreateProductDTO> {
   add_images?: string[];
   remove_image_ids?: number[];
 }
 
+const cleanImages = (urls?: string[]) => urls?.filter(u => u?.trim())?.length ? urls.filter(u => u?.trim()) : undefined;
+
 export const productsService = {
-  /**
-   * Get all products with optional filters
-   * Response: { data: Product[], meta: {... } }
-   */
-  getAll: async (params?: ProductFilters) => {
-    return await apiClient.get<Product[]>("/products", { params });
+  getAll: (params?: ProductFilters) => apiClient.get<Product[]>("/products", { params }),
+  getById: (id: number | string) => apiClient.get<Product>(`/products/${id}`),
+  getMine: () => apiClient.get<Product[]>("/products/me/mine"),
+  create: (data: CreateProductDTO) => {
+    const images = cleanImages(data.images);
+    return apiClient.post<Product>("/products", { ...data, images });
   },
-
-  /**
-   * Get single product by ID
-   * Response: { data: Product, meta: {...} }
-   */
-  getById: async (id: number | string) => {
-    return await apiClient.get<Product>(`/products/${id}`);
+  update: (id: number | string, data: UpdateProductDTO) => {
+    const images = cleanImages(data.images);
+    const add_images = cleanImages(data.add_images);
+    return apiClient.put<Product>(`/products/${id}`, { ...data, images, add_images });
   },
-
-  /**
-   * Get products owned by current seller
-   */
-  getMine: async () => {
-    return await apiClient.get<Product[]>("/products/me/mine");
-  },
-
-  /**
-   * Create new product (seller only)
-   */
-  create: async (data: CreateProductDTO) => {
-    const cleanData = {
-      ...data,
-      images: data.images?.filter((url): url is string =>
-        typeof url === "string" && url.trim().length > 0
-      ),
-    };
-
-    if (!cleanData.images || cleanData.images.length === 0) {
-      delete cleanData.images;
-    }
-
-    return await apiClient.post<Product>("/products", cleanData);
-  },
-
-  /**
-   * Update product (seller only)
-   */
-  update: async (id: number | string, data: UpdateProductDTO) => {
-    const cleanData = { ...data };
-
-    if (cleanData.images) {
-      cleanData.images = cleanData.images.filter((url): url is string =>
-        typeof url === "string" && url.trim().length > 0
-      );
-      if (cleanData.images.length === 0) {
-        delete cleanData.images;
-      }
-    }
-
-    if (cleanData.add_images) {
-      cleanData.add_images = cleanData.add_images.filter((url): url is string =>
-        typeof url === "string" && url.trim().length > 0
-      );
-      if (cleanData.add_images.length === 0) {
-        delete cleanData.add_images;
-      }
-    }
-
-    return await apiClient.put<Product>(`/products/${id}`, cleanData);
-  },
-
-  /**
-   * Delete product (seller only)
-   */
-  delete: async (id: number | string) => {
-    return await apiClient.delete(`/products/${id}`);
-  },
+  delete: (id: number | string) => apiClient.delete(`/products/${id}`),
 };

@@ -1,127 +1,45 @@
-import { useState, useEffect, useCallback } from "react";
-import { apiClient } from "@/lib/api-client";
-import type { Order, OrderStatus } from "@/types";
+"use client";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { orderService } from "@/services/order.service";
+import type { OrderStatus } from "@/types";
 
-interface UseOrdersReturn {
-  orders: Order[];
-  isLoading: boolean;
-  error: string | null;
-  pagination: {
-    page: number;
-    totalPages: number;
-    total: number;
-    limit: number;
-  };
-  currentStatus: OrderStatus | undefined;
-  setPage: (page: number) => void;
-  setStatus: (status: OrderStatus | undefined) => void;
-  refetch: () => void;
-}
-
-export function useOrders(): UseOrdersReturn {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function useOrders() {
   const [page, setPage] = useState(1);
-  const [status, setStatus] = useState<OrderStatus | undefined>(undefined);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    totalPages: 1,
-    total: 0,
-    limit: 10,
+  const [status, setStatus] = useState<OrderStatus>();
+  const { data, isLoading, error, refetch } = useQuery({ 
+    queryKey: ["orders", "me", { page, status }], 
+    queryFn: () => orderService.getMyOrders({ page, status }) 
   });
 
-  const fetchOrders = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const params = new URLSearchParams();
-      params.append("page", page.toString());
-      params.append("limit", "10");
-      if (status) {
-        params.append("status", status);
-      }
-
-      const response = await apiClient.get<Order[]>(
-        `/orders/me?${params.toString()}`,
-      );
-      setOrders(response.data || []);
-
-      if (response.meta) {
-        setPagination({
-          page: response.meta.page || 1,
-          totalPages: response.meta.totalPages || 1,
-          total: response.meta.total || 0,
-          limit: response.meta.limit || 10,
-        });
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal memuat pesanan");
-      setOrders([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [page, status]);
-
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
-
-  const handleSetStatus = (newStatus: OrderStatus | undefined) => {
-    setStatus(newStatus);
-    setPage(1); // Reset to first page when filter changes
-  };
-
   return {
-    orders,
+    orders: data?.orders || [],
     isLoading,
-    error,
-    pagination,
-    currentStatus: status,
+    error: error instanceof Error ? error.message : null,
+    pagination: data?.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 },
     setPage,
-    setStatus: handleSetStatus,
-    refetch: fetchOrders,
-  };
-}
-
-// Keep the existing hooks for backward compatibility
-export function useMyOrders() {
-  const { orders, isLoading, error, refetch } = useOrders();
-  return {
-    data: { data: orders },
-    isLoading,
-    isError: !!error,
+    setStatus,
+    currentStatus: status,
     refetch,
   };
 }
 
-export function useStoreOrders() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function useOrderDetail(id: number) {
+  return useQuery({ queryKey: ["order", id], queryFn: () => orderService.getOrderDetail(id), enabled: !!id });
+}
 
-  const fetchOrders = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await apiClient.get<Order[]>("/orders/seller/incoming");
-      setOrders(response.data || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal memuat pesanan");
-      setOrders([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+export function useCreateOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: orderService.createOrder,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["orders"] }),
+  });
+}
 
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
-
-  return {
-    data: { data: orders },
-    isLoading,
-    isError: !!error,
-    refetch: fetchOrders,
-  };
+export function useCancelOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: orderService.cancelOrder,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["orders"] }),
+  });
 }

@@ -2,63 +2,42 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import type { User, LoginRequest, RegisterRequest, AuthResponse } from "@/types";
 
-// Helper function to check if we're on an auth page
-function isOnAuthPage(): boolean {
-  if (typeof window === "undefined") return false;
-  const currentPath = window.location.pathname;
-  return currentPath.startsWith("/login") ||
-         currentPath.startsWith("/register") ||
-         currentPath.startsWith("/auth");
-}
+const isAuthPage = () => typeof window !== "undefined" && ["/login", "/register", "/auth"].some(p => window.location.pathname.startsWith(p));
 
 export function useAuth() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["auth", "me"],
     queryFn: () => apiClient.get<User>("/auth/me"),
     retry: false,
-    staleTime: 5 * 60 * 1000,
-    // Don't fetch on auth pages to prevent redirect loops
-    enabled: !isOnAuthPage(),
+    staleTime: 300000,
+    enabled: !isAuthPage(),
   });
-
-  return {
-    user: data?.data || null,
-    isLoading: isOnAuthPage() ? false : isLoading,
-    isAuthenticated: !!data?.data,
-    isError,
-  };
+  return { user: data?.data || null, isLoading: isAuthPage() ? false : isLoading, isAuthenticated: !!data?.data, isError };
 }
 
 export function useLogin() {
-  const queryClient = useQueryClient();
-
+  const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: LoginRequest) =>
-      apiClient.post<AuthResponse>("/auth/login", data),
-    onSuccess: (response) => {
-      if (response.data?.token) {
-        apiClient.setToken(response.data.token);
-      }
-      queryClient.invalidateQueries({ queryKey: ["auth"] });
+    mutationFn: (data: LoginRequest) => apiClient.post<AuthResponse>("/auth/login", data),
+    onSuccess: (res) => {
+      if (res.data?.token) apiClient.setToken(res.data.token);
+      qc.invalidateQueries({ queryKey: ["auth"] });
     },
   });
 }
 
 export function useRegister() {
   return useMutation({
-    mutationFn: (data: RegisterRequest) =>
-      apiClient.post<AuthResponse>("/auth/register", data),
+    mutationFn: (data: RegisterRequest) => apiClient.post<AuthResponse>("/auth/register", data),
   });
 }
 
 export function useLogout() {
-  const queryClient = useQueryClient();
-
+  const qc = useQueryClient();
   return useMutation({
-    mutationFn: () => Promise.resolve(),
+    mutationFn: async () => apiClient.clearToken(),
     onSuccess: () => {
-      apiClient.clearToken();
-      queryClient.clear();
+      qc.clear();
       window.location.href = "/login";
     },
   });

@@ -1,132 +1,71 @@
 "use client";
-
-import { useState, useEffect, useCallback } from "react";
-import { User } from "@/types";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userService, uploadService } from "@/services/user.service";
 import { toast } from "sonner";
 
 export function useUser() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const qc = useQueryClient();
+  const { data: user, isLoading, error, refetch } = useQuery({ queryKey: ["user", "me"], queryFn: () => userService.getMyProfile() });
 
-  const fetchUser = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await userService. getMyProfile();
-      setUser(data);
-    } catch (err) {
-      setError(err instanceof Error ? err. message : "Gagal memuat profil");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const updateProfile = useMutation({
+    mutationFn: (d: any) => userService.updateProfile(d),
+    onSuccess: (res) => {
+      qc.setQueryData(["user", "me"], (prev: any) => ({ ...prev, ...res }));
+      toast.success("Profil diperbarui");
+    },
+    onError: (err: any) => toast.error(err.message || "Gagal update profil"),
+  });
 
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+  const updateEmail = useMutation({
+    mutationFn: ({ e, p }: any) => userService.updateEmail(e, p),
+    onSuccess: () => toast.success("Email diperbarui"),
+    onError: (err: any) => toast.error(err.message || "Gagal update email"),
+  });
 
-  const updateProfile = async (
-    data: Partial<Pick<User, "name" | "whatsapp">>
-  ) => {
-    try {
-      const updatedUser = await userService.updateProfile(data);
-      setUser(updatedUser);
-      toast.success("Profil berhasil diperbarui");
-      return updatedUser;
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message :  "Gagal memperbarui profil";
-      toast.error(message);
-      throw err;
-    }
-  };
+  const updateWhatsapp = useMutation({
+    mutationFn: (w: string) => userService.updateWhatsapp(w),
+    onSuccess: () => toast.success("WhatsApp diperbarui"),
+    onError: (err: any) => toast.error(err.message || "Gagal update WhatsApp"),
+  });
 
-  const updateProfileImage = async (file: File) => {
-    try {
-      const imageUrl = await uploadService.uploadImage(file);
-      const updatedUser = await userService.updateProfileImage(imageUrl);
-      setUser(updatedUser);
-      toast.success("Foto profil berhasil diperbarui");
-      return updatedUser;
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message :  "Gagal memperbarui foto profil";
-      toast.error(message);
-      throw err;
-    }
-  };
+  const changePassword = useMutation({
+    mutationFn: ({ c, n }: any) => userService.changePassword(c, n),
+    onSuccess: () => toast.success("Password diperbarui"),
+    onError: (err: any) => toast.error(err.message || "Gagal update password"),
+  });
 
-  const updateEmail = async (email: string, password:  string) => {
-    try {
-      await userService.updateEmail(email, password);
-      await fetchUser();
-      toast.success("Email berhasil diperbarui");
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Gagal memperbarui email";
-      toast.error(message);
-      throw err;
-    }
-  };
+  const upgradeToSeller = useMutation({
+    mutationFn: (d: any) => userService.upgradeToSeller(d),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["user", "me"] });
+      toast.success("Berhasil upgrade ke seller");
+    },
+    onError: (err: any) => toast.error(err.message || "Gagal upgrade"),
+  });
 
-  const updateWhatsapp = async (whatsapp: string) => {
-    try {
-      await userService.updateWhatsapp(whatsapp);
-      await fetchUser();
-      toast.success("Nomor WhatsApp berhasil diperbarui");
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message :  "Gagal memperbarui WhatsApp";
-      toast.error(message);
-      throw err;
-    }
-  };
-
-  const changePassword = async (
-    currentPassword: string,
-    newPassword: string
-  ) => {
-    try {
-      await userService.changePassword(currentPassword, newPassword);
-      toast.success("Password berhasil diperbarui");
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Gagal memperbarui password";
-      toast.error(message);
-      throw err;
-    }
-  };
-
-  const upgradeToSeller = async (storeName: string, description: string, whatsapp: string) => {
-    try {
-      await userService.upgradeToSeller({
-        store_name: storeName,
-        description,
-        whatsapp,
-      });
-      await fetchUser();
-      toast.success("Berhasil upgrade ke seller!  Menunggu verifikasi.");
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Gagal upgrade ke seller";
-      toast. error(message);
-      throw err;
-    }
-  };
+  const updateProfileImage = useMutation({
+    mutationFn: async (f: File) => {
+      const url = await uploadService.uploadImage(f);
+      return userService.updateProfileImage(url);
+    },
+    onSuccess: (u) => {
+      qc.setQueryData(["user", "me"], u);
+      toast.success("Foto profil diperbarui");
+    },
+    onError: (err: any) => toast.error(err.message || "Gagal update foto"),
+  });
 
   return {
-    user,
+    user: user || null,
     isLoading,
-    error,
-    refetch: fetchUser,
-    updateProfile,
-    updateProfileImage,
-    updateEmail,
-    updateWhatsapp,
-    changePassword,
-    upgradeToSeller,
-    isSeller: user?. role === "seller",
+    error: error instanceof Error ? error.message : null,
+    refetch,
+    updateProfile: updateProfile.mutateAsync,
+    updateProfileImage: updateProfileImage.mutateAsync,
+    updateEmail: (e: string, p: string) => updateEmail.mutateAsync({ e, p }),
+    updateWhatsapp: (w: string) => updateWhatsapp.mutateAsync(w),
+    changePassword: (c: string, n: string) => changePassword.mutateAsync({ c, n }),
+    upgradeToSeller: (store: string, desc: string, wa: string) => upgradeToSeller.mutateAsync({ store_name: store, description: desc, whatsapp: wa }),
+    isSeller: user?.role === "seller",
   };
 }

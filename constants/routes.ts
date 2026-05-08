@@ -3,11 +3,8 @@ export const ROUTES = {
   LOGIN: "/login",
   REGISTER: "/register",
   PRODUCTS: "/products",
-  PRODUCT_DETAIL: (id: number | string) => `/products/${id}`,
+  PRODUCT_DETAIL: (id: string | number) => `/products/${id}`,
   PROFILE: "/buyer/profile",
   NOTIFICATIONS: "/buyer/notifications",
-  DASHBOARD: {
-    BUYER: "/buyer/profile",
-    SELLER: "/store",
-  },
+  DASHBOARD: { BUYER: "/buyer/profile", SELLER: "/store" },
 } as const;

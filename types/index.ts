@@ -1,6 +1,3 @@
-// ============================================
-// IMAGE
-// ============================================
 export interface Image {
   id: number;
   url: string;
@@ -12,9 +9,6 @@ export interface Image {
   created_at: string;
 }
 
-// ============================================
-// USER
-// ============================================
 export interface User {
   id: number;
   nim: string;
@@ -30,9 +24,6 @@ export interface User {
   profile_image?: string | null;
 }
 
-// ============================================
-// STORE
-// ============================================
 export interface Store {
   id: number;
   user_id: number;
@@ -45,9 +36,6 @@ export interface Store {
   store_image?: string | null;
 }
 
-// ============================================
-// PRODUCT
-// ============================================
 export interface Product {
   id: number;
   seller_id: number;
@@ -60,21 +48,15 @@ export interface Product {
   delivery_date: string | null;
   created_at: string;
   updated_at: string;
-  // Images
   images?: Image[];
   primary_image?: string | null;
-  // Computed
   available_days?: string[];
-  // Joined
   seller_name?: string;
   seller_faculty?: string;
   seller_whatsapp?: string;
   store_name?: string;
 }
 
-// ============================================
-// ORDER
-// ============================================
 export interface Order {
   id: number;
   buyer_id: number;
@@ -95,9 +77,6 @@ export interface Order {
   buyer_whatsapp?: string;
 }
 
-// ============================================
-// NOTIFICATION
-// ============================================
 export interface Notification {
   id: number;
   user_id: number;
@@ -107,9 +86,6 @@ export interface Notification {
   created_at: string;
 }
 
-// ============================================
-// DASHBOARD
-// ============================================
 export interface DashboardSellerSummary {
   total_revenue: number;
   monthly_revenue: number;
@@ -130,9 +106,6 @@ export interface DashboardBuyerSummary {
   recent_orders: Order[];
 }
 
-// ============================================
-// API TYPES
-// ============================================
 export interface ApiResponse<T = unknown> {
   message: string;
   data?: T;
@@ -147,15 +120,9 @@ export interface ApiResponse<T = unknown> {
 export interface ApiError {
   message: string;
   status?: number;
-  errors?: Array<{
-    path: string;
-    message: string;
-  }>;
+  errors?: Array<{ path: string; message: string }>;
 }
 
-// ============================================
-// PAGINATION & FILTERS
-// ============================================
 export interface PaginationParams {
   page?: number;
   limit?: number;
@@ -169,9 +136,6 @@ export interface ProductFilters extends PaginationParams {
   seller_id?: number;
 }
 
-// ============================================
-// AUTH TYPES
-// ============================================
 export interface LoginRequest {
   credential: string;
   password: string;
@@ -194,9 +158,6 @@ export interface AuthResponse {
   token: string;
 }
 
-// ============================================
-// CREATE/UPDATE DTOs
-// ============================================
 export interface CreateProductDTO {
   name: string;
   description: string;
@@ -214,9 +175,6 @@ export interface CreateStoreDTO {
   whatsapp: string;
 }
 
-// ============================================
-// TYPE ALIASES
-// ============================================
 export type UserRole = "buyer" | "seller";
 export type OrderStatus = Order["status"];
 export type ImageEntityType = Image["entity_type"];
