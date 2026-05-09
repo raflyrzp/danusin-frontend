@@ -10,3 +10,18 @@
     @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))];
   }
 }
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #E5DEC5;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #B4A98C;
+  }
+}

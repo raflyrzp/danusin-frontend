@@ -21,6 +21,7 @@ import { registerAction } from "@/actions/auth/register";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TermsAndConditionsModal } from "./TermsAndConditionsModal";
 import {
   Select,
   SelectContent,
@@ -94,7 +95,7 @@ export function RegisterForm() {
             <Input
               id="name"
               disabled={isPending}
-              className="border-0 px-0 shadow-none focus-visible:ring-0"
+              className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent outline-none"
               placeholder="Fulan"
               {...register("name")}
             />
@@ -113,7 +114,7 @@ export function RegisterForm() {
             <Input
               id="nim"
               disabled={isPending}
-              className="border-0 px-0 shadow-none focus-visible:ring-0"
+              className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent outline-none"
               placeholder="1313xxxx"
               {...register("nim")}
             />
@@ -135,7 +136,7 @@ export function RegisterForm() {
             id="email"
             type="email"
             disabled={isPending}
-            className="border-0 px-0 shadow-none focus-visible:ring-0"
+            className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent outline-none"
             placeholder="email@example.com"
             {...register("email")}
           />
@@ -156,7 +157,7 @@ export function RegisterForm() {
             id="whatsapp"
             type="tel"
             disabled={isPending}
-            className="border-0 px-0 shadow-none focus-visible:ring-0"
+            className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent outline-none"
             placeholder="08xxxxxxxxxx"
             {...register("whatsapp")}
           />
@@ -225,7 +226,7 @@ export function RegisterForm() {
           <Input
             id="major"
             disabled={isPending}
-            className="border-0 px-0 shadow-none focus-visible:ring-0"
+            className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent outline-none"
             placeholder="Informatika"
             {...register("major")}
           />
@@ -246,7 +247,7 @@ export function RegisterForm() {
             id="batch_year"
             type="text"
             disabled={isPending}
-            className="border-0 px-0 shadow-none focus-visible:ring-0"
+            className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent outline-none"
             placeholder="2021"
             {...register("batch_year")}
           />
@@ -270,7 +271,7 @@ export function RegisterForm() {
               id="password"
               type="password"
               disabled={isPending}
-              className="border-0 px-0 shadow-none focus-visible:ring-0"
+              className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent outline-none"
               placeholder="Min 8 karakter"
               {...register("password")}
             />
@@ -290,7 +291,7 @@ export function RegisterForm() {
               id="confirmPassword"
               type="password"
               disabled={isPending}
-              className="border-0 px-0 shadow-none focus-visible:ring-0"
+              className="border-0 px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent outline-none"
               placeholder="Ulangi password"
               {...register("confirmPassword")}
             />
@@ -305,16 +306,16 @@ export function RegisterForm() {
 
       {/* Checkbox */}
       <div className="space-y-1 text-xs text-[#7A6848]">
-        <label className="flex items-start gap-2">
+        <label className="flex items-start gap-2 cursor-pointer group">
           <input
             type="checkbox"
-            className="mt-[3px] h-3.5 w-3.5 rounded border border-[#E5DEC5] text-[#FEBA17]"
+            className="mt-[3px] h-3.5 w-3.5 rounded border border-[#E5DEC5] text-[#FEBA17] cursor-pointer"
             disabled={isPending}
             {...register("agree")}
           />
-          <span>
+          <span className="group-hover:text-[#4E1F00] transition-colors">
             Saya menyetujui{" "}
-            <span className="font-semibold underline">Syarat & Ketentuan</span>
+            <TermsAndConditionsModal />
           </span>
         </label>
         {errors.agree && (

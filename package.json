@@ -67,6 +67,7 @@
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.22",
+    "baseline-browser-mapping": "^2.10.28",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17",
     "typescript": "^5.9.3"
