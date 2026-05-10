@@ -9,7 +9,7 @@ export const userService = {
   updateEmail: (email: string, password: string) => apiClient.patch("/users/me/email", { email, password }),
   updateWhatsapp: (whatsapp: string) => apiClient.patch("/users/me/whatsapp", { whatsapp }),
   changePassword: (currentPassword: string, newPassword: string) => apiClient.patch("/users/me/password", { currentPassword, newPassword }),
-  upgradeToSeller: (data: { store_name: string; description?: string; whatsapp: string }) => apiClient.post("/users/me/upgrade-seller", data),
+  upgradeToSeller: (data: { store_name: string; description?: string; whatsapp: string }) => apiClient.post("/users/me/store", data),
   getPublicProfile: async (id: number) => (await apiClient.get<User & { active_products_count: number }>(`/users/${id}/public-profile`)).data!,
 };
 

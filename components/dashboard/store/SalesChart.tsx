@@ -54,7 +54,7 @@ export default function SalesChart({ data }: SalesChartProps) {
             axisLine={false}
           />
           <Tooltip
-            formatter={(value: number) => [formatPrice(value), "Pendapatan"]}
+            formatter={(value: any) => [formatPrice(Number(value) || 0), "Pendapatan"]}
             contentStyle={{
               backgroundColor: "#F8F4E1",
               border: "1px solid #E3D9BD",

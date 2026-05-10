@@ -1,6 +1,7 @@
 "use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userService, uploadService } from "@/services/user.service";
+import { apiClient } from "@/lib/api-client";
 import { toast } from "sonner";
 
 export function useUser() {
@@ -36,8 +37,10 @@ export function useUser() {
 
   const upgradeToSeller = useMutation({
     mutationFn: (d: any) => userService.upgradeToSeller(d),
-    onSuccess: () => {
+    onSuccess: (res: any) => {
+      if (res.data?.token) apiClient.setToken(res.data.token);
       qc.invalidateQueries({ queryKey: ["user", "me"] });
+      qc.invalidateQueries({ queryKey: ["store"] });
       toast.success("Berhasil upgrade ke seller");
     },
     onError: (err: any) => toast.error(err.message || "Gagal upgrade"),

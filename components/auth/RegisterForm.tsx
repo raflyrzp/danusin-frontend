@@ -179,8 +179,8 @@ export function RegisterForm() {
           disabled={isPending}
         >
           <SelectTrigger className="border-[#E5DEC5] bg-white focus:ring-[#FEBA17] w-full">
-            <div className="flex items-center">
-              <Building2 className="mr-2 h-4 w-4 text-[#B4A98C]" />
+            <div className="flex items-center min-w-0 overflow-hidden">
+              <Building2 className="mr-2 h-4 w-4 text-[#B4A98C] shrink-0" />
               <SelectValue placeholder="Pilih Fakultas" />
             </div>
           </SelectTrigger>

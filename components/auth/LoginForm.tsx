@@ -49,7 +49,7 @@ export function LoginForm() {
 
         // Refresh router untuk memperbarui state autentikasi
         router.refresh();
-        router.push("/");
+        window.location.href = "/";
       }
     });
   };
