@@ -44,22 +44,22 @@ const STATUS_CONFIG: Record<
   string,
   { label: string; color: string; icon: React.ElementType }
 > = {
-  "Menunggu Konfirmasi": {
+  "MENUNGGU_KONFIRMASI": {
     label: "Menunggu Konfirmasi",
     color: "bg-yellow-100 text-yellow-800 border-yellow-200",
     icon: Clock,
   },
-  "Diproses": {
+  "DIPROSES": {
     label: "Diproses",
     color: "bg-purple-100 text-purple-800 border-purple-200",
     icon: Package,
   },
-  "Selesai": {
+  "SELESAI": {
     label: "Selesai",
     color: "bg-green-100 text-green-800 border-green-200",
     icon: CheckCircle2,
   },
-  "Dibatalkan": {
+  "DIBATALKAN": {
     label: "Dibatalkan",
     color: "bg-red-100 text-red-800 border-red-200",
     icon: XCircle,
@@ -171,7 +171,7 @@ export default function StoreOrdersPage() {
           <div className="flex items-center gap-1 px-3 py-1.5 bg-yellow-50 rounded-full border border-yellow-200">
             <Clock className="h-4 w-4 text-yellow-600" />
             <span className="text-yellow-700 font-medium">
-              {orders.filter((o) => o.status === "Menunggu Konfirmasi").length} Menunggu
+              {orders.filter((o) => o.status === "MENUNGGU_KONFIRMASI").length} Menunggu
             </span>
           </div>
         </div>
@@ -197,10 +197,10 @@ export default function StoreOrdersPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Semua Status</SelectItem>
-            <SelectItem value="Menunggu Konfirmasi">Menunggu Konfirmasi</SelectItem>
-            <SelectItem value="Diproses">Diproses</SelectItem>
-            <SelectItem value="Selesai">Selesai</SelectItem>
-            <SelectItem value="Dibatalkan">Dibatalkan</SelectItem>
+            <SelectItem value="MENUNGGU_KONFIRMASI">Menunggu Konfirmasi</SelectItem>
+            <SelectItem value="DIPROSES">Diproses</SelectItem>
+            <SelectItem value="SELESAI">Selesai</SelectItem>
+            <SelectItem value="DIBATALKAN">Dibatalkan</SelectItem>
           </SelectContent>
         </Select>
       </div>*/}
@@ -217,7 +217,7 @@ export default function StoreOrdersPage() {
       ) : (
         <div className="space-y-4">
           {filteredOrders.map((order) => {
-          const statusConfig = STATUS_CONFIG[order.status] || STATUS_CONFIG["Menunggu Konfirmasi"];
+          const statusConfig = STATUS_CONFIG[order.status] || STATUS_CONFIG["MENUNGGU_KONFIRMASI"];
           const StatusIcon = statusConfig.icon;
 
             return (
@@ -290,7 +290,7 @@ export default function StoreOrdersPage() {
                 </div>
 
                 {/* Actions */}
-                {order.status === "Menunggu Konfirmasi" && (
+                {order.status === "MENUNGGU_KONFIRMASI" && (
                   <div className="flex flex-col sm:flex-row gap-2 mt-4">
                     <Button
                       onClick={() => handleConfirm(order.id)}
@@ -333,7 +333,7 @@ export default function StoreOrdersPage() {
                   </div>
                 )}*/}
 
-                {order.status === "Diproses" && (
+                {order.status === "DIPROSES" && (
                   <div className="mt-4">
                     <Button
                       onClick={() => handleComplete(order.id)}

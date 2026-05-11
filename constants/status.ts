@@ -1,8 +1,8 @@
 export const ORDER_STATUS = {
-  PENDING: "Menunggu Konfirmasi",
-  PROCESSING: "Diproses",
-  COMPLETED: "Selesai",
-  CANCELLED: "Dibatalkan",
+  PENDING: "MENUNGGU_KONFIRMASI",
+  PROCESSING: "DIPROSES",
+  COMPLETED: "SELESAI",
+  CANCELLED: "DIBATALKAN",
 } as const;
 
 export const ORDER_STATUS_COLORS = {

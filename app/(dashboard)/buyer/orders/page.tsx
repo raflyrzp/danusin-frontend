@@ -15,10 +15,10 @@ import {
 
 const statusOptions: { value: OrderStatus | "all"; label: string }[] = [
   { value: "all", label: "Semua Status" },
-  { value: "Menunggu Konfirmasi", label: "Menunggu Konfirmasi" },
-  { value: "Diproses", label: "Diproses" },
-  { value: "Selesai", label: "Selesai" },
-  { value: "Dibatalkan", label: "Dibatalkan" },
+  { value: "MENUNGGU_KONFIRMASI", label: "Menunggu Konfirmasi" },
+  { value: "DIPROSES", label: "Diproses" },
+  { value: "SELESAI", label: "Selesai" },
+  { value: "DIBATALKAN", label: "Dibatalkan" },
 ];
 
 export default function OrdersPage() {

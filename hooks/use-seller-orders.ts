@@ -18,7 +18,7 @@ export function useSellerOrders() {
     mutationFn: ({ id, status, reason }: { id: number; status: OrderStatus; reason?: string }) => sellerOrderService.updateOrderStatus(id, status, reason),
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: ["orders", "seller"] });
-      const msgs: Record<string, string> = { "Diproses": "Pesanan dikonfirmasi", "Selesai": "Pesanan selesai", "Dibatalkan": "Pesanan ditolak" };
+      const msgs: Record<string, string> = { "DIPROSES": "Pesanan dikonfirmasi", "SELESAI": "Pesanan selesai", "DIBATALKAN": "Pesanan ditolak" };
       toast.success(msgs[vars.status] || "Status diperbarui");
     },
     onError: (err: any) => toast.error(err.message || "Gagal memperbarui status"),
@@ -32,9 +32,9 @@ export function useSellerOrders() {
     setPage,
     setStatus,
     refetch,
-    confirmOrder: (id: number) => updateStatus({ id, status: "Diproses" }),
-    completeOrder: (id: number) => updateStatus({ id, status: "Selesai" }),
-    rejectOrder: (id: number, reason?: string) => updateStatus({ id, status: "Dibatalkan", reason }),
+    confirmOrder: (id: number) => updateStatus({ id, status: "DIPROSES" }),
+    completeOrder: (id: number) => updateStatus({ id, status: "SELESAI" }),
+    rejectOrder: (id: number, reason?: string) => updateStatus({ id, status: "DIBATALKAN", reason }),
     updateStatus: (id: number, status: OrderStatus) => updateStatus({ id, status }),
   };
 }

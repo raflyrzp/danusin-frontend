@@ -9,19 +9,19 @@ import { cn, getImageUrl } from "@/lib/utils";
 import { Order, OrderStatus } from "@/types";
 
 const statusConfig: Record<OrderStatus, { label: string; className: string }> = {
-  "Menunggu Konfirmasi": {
+  "MENUNGGU_KONFIRMASI": {
     label: "Menunggu Konfirmasi",
     className: "bg-yellow-100 text-yellow-800 border-yellow-200",
   },
-  "Diproses": {
+  "DIPROSES": {
     label: "Diproses",
     className: "bg-blue-100 text-blue-800 border-blue-200",
   },
-  "Selesai": {
+  "SELESAI": {
     label: "Selesai",
     className: "bg-green-100 text-green-800 border-green-200",
   },
-  "Dibatalkan": {
+  "DIBATALKAN": {
     label: "Dibatalkan",
     className: "bg-red-100 text-red-800 border-red-200",
   },
@@ -124,7 +124,7 @@ export function OrderCard({ order, onBuyAgain, onContactSeller }: OrderCardProps
             </Badge>
           </div>
           <div className="flex gap-2">
-            {order.status === "Selesai" && (
+            {order.status === "SELESAI" && (
               <Button
                 size="sm"
                 className="bg-[#FEBA17] text-[#4E1F00] hover:bg-[#F5D36B] rounded-full text-xs"
