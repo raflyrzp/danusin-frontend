@@ -75,6 +75,30 @@ export interface Order {
   store_name?: string;
   buyer_name?: string;
   buyer_whatsapp?: string;
+  review?: Review;
+}
+
+export interface Review {
+  id: number;
+  user_id: number;
+  product_id: number;
+  order_id: number;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  updated_at: string;
+  user_name?: string;
+  images?: string[];
+}
+
+export interface RatingSummary {
+  averageRating: number;
+  totalReviews: number;
+}
+
+export interface ProductReviewsResponse {
+  reviews: Review[];
+  summary: RatingSummary;
 }
 
 export interface Notification {

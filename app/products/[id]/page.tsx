@@ -12,6 +12,8 @@ import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import { orderService } from "@/services/order.service";
 import { toast } from "sonner";
+import { useProductReviews } from "@/hooks/use-reviews";
+import { ReviewSection } from "@/components/products/ReviewSection";
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
@@ -24,6 +26,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   // All hooks must be called unconditionally and in the same order every render
   const router = useRouter();
   const { data, isLoading, isError } = useProduct(id);
+  const { data: reviewData } = useProductReviews(Number.parseInt(id));
   const [isOrdering, setIsOrdering] = useState(false);
 
   const handleOrder = async (quantity: number) => {
@@ -107,6 +110,14 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             />
           </div>
         </div>
+
+        {/* Review Section */}
+        {reviewData && (
+          <ReviewSection 
+            reviews={reviewData.reviews} 
+            summary={reviewData.summary} 
+          />
+        )}
       </div>
     </div>
   );

@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn, getImageUrl } from "@/lib/utils";
 import { Order, OrderStatus } from "@/types";
+import { useState } from "react";
+import { ReviewFormModal } from "./ReviewFormModal";
+import { Star } from "lucide-react";
 
 const statusConfig: Record<OrderStatus, { label: string; className: string }> = {
   "MENUNGGU_KONFIRMASI": {
@@ -34,6 +37,7 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order, onBuyAgain, onContactSeller }: OrderCardProps) {
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("id-ID", {
       day: "numeric",
@@ -125,13 +129,26 @@ export function OrderCard({ order, onBuyAgain, onContactSeller }: OrderCardProps
           </div>
           <div className="flex gap-2">
             {order.status === "SELESAI" && (
-              <Button
-                size="sm"
-                className="bg-[#FEBA17] text-[#4E1F00] hover:bg-[#F5D36B] rounded-full text-xs"
-                onClick={() => onBuyAgain?.(order)}
-              >
-                Beli Lagi
-              </Button>
+              <>
+                {!order.review && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-[#FEBA17] text-[#4E1F00] hover:bg-[#FEBA17]/10 rounded-full text-xs"
+                    onClick={() => setIsReviewModalOpen(true)}
+                  >
+                    <Star className="h-3 w-3 mr-1 fill-[#FEBA17] text-[#FEBA17]" />
+                    Beri Rating
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  className="bg-[#FEBA17] text-[#4E1F00] hover:bg-[#F5D36B] rounded-full text-xs"
+                  onClick={() => onBuyAgain?.(order)}
+                >
+                  Beli Lagi
+                </Button>
+              </>
             )}
             <Button
               size="sm"
@@ -145,6 +162,12 @@ export function OrderCard({ order, onBuyAgain, onContactSeller }: OrderCardProps
           </div>
         </div>
       </CardContent>
+      <ReviewFormModal 
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        orderId={order.id}
+        productName={order.product_name || "Produk"}
+      />
     </Card>
   );
 }
