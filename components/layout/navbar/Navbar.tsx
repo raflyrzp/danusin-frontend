@@ -20,7 +20,7 @@ const navLinks = [
 export function Navbar({ isAuthenticated: pAuth, userName: pName, userEmail: pEmail, onLogout: pLogout }: { isAuthenticated?: boolean; userName?: string; userEmail?: string; onLogout?: () => void }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { user, isAuthenticated: hAuth } = useAuth();
+  const { user, isAuthenticated: hAuth, isLoading } = useAuth();
   const { mutate: hLogout } = useLogout();
 
   const auth = pAuth ?? hAuth;
@@ -63,7 +63,9 @@ export function Navbar({ isAuthenticated: pAuth, userName: pName, userEmail: pEm
           </nav>
         </div>
         <div className="hidden md:flex items-center gap-3">
-          {auth ? (
+          {isLoading ? (
+            <div className="h-8 w-24 bg-[#4E1F00]/10 animate-pulse rounded-xl" />
+          ) : auth ? (
             <>
               <NotificationBell />
               <UserMenu name={name} email={email} onLogout={handleLogout} />
@@ -120,7 +122,12 @@ export function Navbar({ isAuthenticated: pAuth, userName: pName, userEmail: pEm
                   </>
                 )}
                 <div className="pt-4 border-t border-[#E3D9BD]">
-                  {auth ? (
+                  {isLoading ? (
+                    <div className="space-y-2">
+                      <div className="h-12 w-full bg-[#4E1F00]/10 animate-pulse rounded-xl" />
+                      <div className="h-12 w-full bg-[#4E1F00]/10 animate-pulse rounded-xl" />
+                    </div>
+                  ) : auth ? (
                     <Button className="w-full rounded-xl bg-[#4E1F00] text-[#F8F4E1] hover:bg-[#74512D] h-12 text-sm font-medium" onClick={() => { handleLogout(); setOpen(false); }}><LogOut className="h-4 w-4 mr-2" />Keluar</Button>
                   ) : (
                     <div className="space-y-2">

@@ -13,7 +13,7 @@ interface ProductInfoProps {
 
   product: Product;
 
-  onAddToCart?: (quantity: number) => void;
+  onAddToCart?: (quantity: number, paymentMethod: "COD" | "DIGITAL") => void;
 
   actionLabel?: string;
 }
@@ -23,6 +23,7 @@ interface ProductInfoProps {
 export function ProductInfo({ product, onAddToCart, actionLabel = "Tambah ke Keranjang" }: ProductInfoProps) {
 
   const [quantity, setQuantity] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState<"COD" | "DIGITAL">("COD");
 
   const [isAdding, setIsAdding] = useState(false);
 
@@ -44,7 +45,7 @@ export function ProductInfo({ product, onAddToCart, actionLabel = "Tambah ke Ker
     if (! onAddToCart) return;
     setIsAdding(true);
     try {
-      await onAddToCart(quantity);
+      await onAddToCart(quantity, paymentMethod);
     } finally {
       setIsAdding(false);
     }
@@ -155,6 +156,37 @@ export function ProductInfo({ product, onAddToCart, actionLabel = "Tambah ke Ker
             max={product.stock || 1}
             disabled={!mounted || ! isOpen || ! hasStock}
           />
+        </div>
+
+        {/* Payment Method */}
+        <div className="border-t border-[#F3E6C5] pt-3">
+          <p className="mb-2 text-sm text-[#74512D]">Metode Pembayaran</p>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant={paymentMethod === "COD" ? "default" : "outline"}
+              className={cn(
+                "w-full",
+                paymentMethod === "COD" 
+                  ? "bg-[#FEBA17] text-[#4E1F00] hover:bg-[#FEBA17]/90 border-transparent" 
+                  : "border-[#FEBA17] text-[#4E1F00] hover:bg-[#FEBA17]/10"
+              )}
+              onClick={() => setPaymentMethod("COD")}
+            >
+              COD / Tunai
+            </Button>
+            <Button
+              variant={paymentMethod === "DIGITAL" ? "default" : "outline"}
+              className={cn(
+                "w-full",
+                paymentMethod === "DIGITAL" 
+                  ? "bg-[#FEBA17] text-[#4E1F00] hover:bg-[#FEBA17]/90 border-transparent" 
+                  : "border-[#FEBA17] text-[#4E1F00] hover:bg-[#FEBA17]/10"
+              )}
+              onClick={() => setPaymentMethod("DIGITAL")}
+            >
+              Transfer / Qris
+            </Button>
+          </div>
         </div>
 
         {/* Subtotal */}

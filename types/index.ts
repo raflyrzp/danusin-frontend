@@ -64,7 +64,9 @@ export interface Order {
   seller_id?: number;
   quantity: number;
   total_price: number;
-  status: "MENUNGGU_KONFIRMASI" | "DIPROSES" | "SELESAI" | "DIBATALKAN";
+  status: "PENDING_PAYMENT" | "MENUNGGU_KONFIRMASI" | "DIPROSES" | "SELESAI" | "DIBATALKAN";
+  payment_method: "COD" | "DIGITAL";
+  snap_token?: string;
   created_at: string;
   updated_at: string;
   product_name?: string;

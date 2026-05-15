@@ -14,6 +14,7 @@ import { orderService } from "@/services/order.service";
 import { toast } from "sonner";
 import { useProductReviews } from "@/hooks/use-reviews";
 import { ReviewSection } from "@/components/products/ReviewSection";
+import { useMidtrans } from "@/hooks/use-midtrans";
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
@@ -28,16 +29,39 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { data, isLoading, isError } = useProduct(id);
   const { data: reviewData } = useProductReviews(Number.parseInt(id));
   const [isOrdering, setIsOrdering] = useState(false);
+  const { snapPay } = useMidtrans();
 
-  const handleOrder = async (quantity: number) => {
+  const handleOrder = async (quantity: number, paymentMethod: "COD" | "DIGITAL") => {
     setIsOrdering(true);
     try {
-      await orderService.createOrder({
+      const order = await orderService.createOrder({
         product_id: Number.parseInt(id, 10),
         quantity,
+        payment_method: paymentMethod,
       });
-      toast.success("Pesanan berhasil dibuat!");
-      router.push("/buyer/orders");
+
+      if (order.snap_token) {
+        snapPay(order.snap_token, {
+          onSuccess: () => {
+            toast.success("Pembayaran berhasil!");
+            router.push("/buyer/orders");
+          },
+          onPending: () => {
+            toast.info("Pembayaran tertunda. Silakan selesaikan pembayaran.");
+            router.push("/buyer/orders");
+          },
+          onError: () => {
+            toast.error("Pembayaran gagal.");
+          },
+          onClose: () => {
+            toast.info("Selesaikan pembayaran nanti di menu Pesanan Saya.");
+            router.push("/buyer/orders");
+          },
+        });
+      } else {
+        toast.success("Pesanan berhasil dibuat!");
+        router.push("/buyer/orders");
+      }
     } catch (err: any) {
       console.error("createOrder error:", err);
       toast.error(err?.message || "Gagal membuat pesanan");

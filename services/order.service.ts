@@ -6,7 +6,7 @@ export interface OrdersResponse {
   orders: Order[];
   pagination: { page: number; limit: number; total: number; totalPages: number };
 }
-export interface CreateOrderPayload { product_id: number; quantity: number }
+export interface CreateOrderPayload { product_id: number; quantity: number; payment_method: "COD" | "DIGITAL" }
 
 const formatOrderRes = (res: any): OrdersResponse => ({
   orders: res.data || [],
