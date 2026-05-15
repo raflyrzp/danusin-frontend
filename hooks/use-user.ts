@@ -39,7 +39,10 @@ export function useUser() {
     mutationFn: (d: any) => userService.upgradeToSeller(d),
     onSuccess: (res: any) => {
       if (res.data?.token) apiClient.setToken(res.data.token);
+      qc.setQueryData(["user", "me"], (prev: any) => prev ? { ...prev, role: "seller" } : prev);
+      qc.setQueryData(["auth", "me"], (prev: any) => prev ? { ...prev, data: { ...prev.data, role: "seller" } } : prev);
       qc.invalidateQueries({ queryKey: ["user", "me"] });
+      qc.invalidateQueries({ queryKey: ["auth", "me"] });
       qc.invalidateQueries({ queryKey: ["store"] });
       toast.success("Berhasil upgrade ke seller");
     },
