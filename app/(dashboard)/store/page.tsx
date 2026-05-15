@@ -13,7 +13,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import dynamic from "next/dynamic";
 
-// Dynamic import untuk chart (client-only)
 const SalesChart = dynamic(
   () => import("@/components/dashboard/store/SalesChart"),
   {
@@ -94,7 +93,6 @@ export default function StoreDashboardPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-[#4E1F00]">Dashboard Penjual</h1>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
           title="Total Produk"
@@ -103,7 +101,6 @@ export default function StoreDashboardPage() {
         />
         <StatCard
           title="Penjualan Bulan Ini"
-          // FIX: Konversi ke Number() sebelum format
           value={formatPrice(Number(dashboard.monthly_revenue) || 0)}
           icon={TrendingUp}
           trend
@@ -120,15 +117,12 @@ export default function StoreDashboardPage() {
         />
         <StatCard
           title="Pesanan Selesai"
-          // FIX: Konversi ke Number() untuk keamanan
           value={Number(dashboard.completed_orders_count) || 0}
           icon={CheckCircle2}
         />
       </div>
 
-      {/* Chart & Recent Orders */}
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Chart */}
         <div className="lg:col-span-2 rounded-xl border border-[#E3D9BD] bg-white p-4 shadow-sm">
           <h2 className="font-semibold text-[#4E1F00] mb-4">
             Grafik Penjualan
@@ -136,7 +130,6 @@ export default function StoreDashboardPage() {
           <SalesChart data={dashboard.monthly_sales || []} />
         </div>
 
-        {/* Recent Orders */}
         <div className="rounded-xl border border-[#E3D9BD] bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold text-[#4E1F00]">Pesanan Terbaru</h2>
@@ -162,7 +155,6 @@ export default function StoreDashboardPage() {
                       {order.product_name} ({order.quantity})
                     </p>
                     <p className="text-sm font-semibold text-[#4E1F00] mt-1">
-                      {/* FIX: Konversi ke Number() */}
                       {formatPrice(Number(order.total_price) || 0)}
                     </p>
                   </div>
