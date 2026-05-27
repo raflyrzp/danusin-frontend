@@ -15,6 +15,7 @@ import {
 
 const statusOptions: { value: OrderStatus | "all"; label: string }[] = [
   { value: "all", label: "Semua Status" },
+  { value: "PENDING_PAYMENT", label: "Menunggu Pembayaran" },
   { value: "MENUNGGU_KONFIRMASI", label: "Menunggu Konfirmasi" },
   { value: "DIPROSES", label: "Diproses" },
   { value: "SELESAI", label: "Selesai" },

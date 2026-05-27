@@ -44,6 +44,11 @@ const STATUS_CONFIG: Record<
   string,
   { label: string; color: string; icon: React.ElementType }
 > = {
+  "PENDING_PAYMENT": {
+    label: "Menunggu Pembayaran",
+    color: "bg-orange-100 text-orange-800 border-orange-200",
+    icon: Clock,
+  },
   "MENUNGGU_KONFIRMASI": {
     label: "Menunggu Konfirmasi",
     color: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -197,6 +202,7 @@ export default function StoreOrdersPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Semua Status</SelectItem>
+            <SelectItem value="PENDING_PAYMENT">Menunggu Pembayaran</SelectItem>
             <SelectItem value="MENUNGGU_KONFIRMASI">Menunggu Konfirmasi</SelectItem>
             <SelectItem value="DIPROSES">Diproses</SelectItem>
             <SelectItem value="SELESAI">Selesai</SelectItem>

@@ -12,6 +12,10 @@ import { ReviewFormModal } from "./ReviewFormModal";
 import { Star } from "lucide-react";
 
 const statusConfig: Record<OrderStatus, { label: string; className: string }> = {
+  "PENDING_PAYMENT": {
+    label: "Menunggu Pembayaran",
+    className: "bg-orange-100 text-orange-800 border-orange-200",
+  },
   "MENUNGGU_KONFIRMASI": {
     label: "Menunggu Konfirmasi",
     className: "bg-yellow-100 text-yellow-800 border-yellow-200",

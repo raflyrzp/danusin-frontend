@@ -2,6 +2,7 @@
 
 import { useStoreDashboard } from "@/hooks/use-store";
 import { formatPrice, cn } from "@/lib/utils";
+import { useState } from "react";
 import {
   Loader2,
   Package,
@@ -9,6 +10,8 @@ import {
   ShoppingBag,
   Clock,
   CheckCircle2,
+  AlertTriangle,
+  Lightbulb,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import dynamic from "next/dynamic";
@@ -22,11 +25,11 @@ const SalesChart = dynamic(
         <Loader2 className="h-6 w-6 animate-spin text-[#FEBA17]" />
       </div>
     ),
-  }
+  },
 );
 
 const STATUS_STYLES: Record<string, string> = {
-  "MENUNGGU_KONFIRMASI": "bg-yellow-100 text-yellow-800",
+  MENUNGGU_KONFIRMASI: "bg-yellow-100 text-yellow-800",
   DIPROSES: "bg-blue-100 text-blue-800",
   SELESAI: "bg-green-100 text-green-800",
   DIBATALKAN: "bg-red-100 text-red-800",
@@ -65,7 +68,8 @@ function StatCard({
 }
 
 export default function StoreDashboardPage() {
-  const { data, isLoading, isError } = useStoreDashboard();
+  const [period, setPeriod] = useState("30");
+  const { data, isLoading, isError } = useStoreDashboard(period);
 
   if (isLoading) {
     return (
@@ -91,7 +95,66 @@ export default function StoreDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-[#4E1F00]">Dashboard Penjual</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-[#4E1F00]">Dashboard Penjual</h1>
+        <select
+          value={period}
+          onChange={(e) => setPeriod(e.target.value)}
+          className="rounded-md border border-[#E3D9BD] bg-white px-3 py-1.5 text-sm text-[#4E1F00] shadow-sm outline-none focus:border-[#FEBA17] focus:ring-1 focus:ring-[#FEBA17]"
+        >
+          <option value="1">1 Hari Terakhir</option>
+          <option value="3">3 Hari Terakhir</option>
+          <option value="7">7 Hari Terakhir</option>
+          <option value="30">30 Hari Terakhir</option>
+          <option value="all">Semua Waktu</option>
+        </select>
+      </div>
+
+      {dashboard.insights && (
+        <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <Lightbulb className="h-5 w-5 text-blue-600" />
+            <h2 className="font-semibold text-blue-800">
+              Insight & Rekomendasi
+            </h2>
+          </div>
+          <p className="text-sm text-blue-700 mb-3">
+            {dashboard.insights.suggestion}
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {dashboard.insights.needsRestock?.length > 0 && (
+              <div className="rounded-md bg-white p-3 border border-red-100">
+                <p className="text-xs font-semibold text-red-600 mb-2 flex items-center gap-1">
+                  <AlertTriangle className="h-3 w-3" /> Perlu Tambah Stok (Stok
+                  &lt; 5)
+                </p>
+                <ul className="text-sm list-disc pl-4 space-y-1 text-gray-700">
+                  {dashboard.insights.needsRestock.map((p: any) => (
+                    <li key={p.id}>
+                      {p.name} (Stok: {p.stock})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {dashboard.insights.reduceStock?.length > 0 && (
+              <div className="rounded-md bg-white p-3 border border-yellow-100">
+                <p className="text-xs font-semibold text-yellow-600 mb-2 flex items-center gap-1">
+                  <AlertTriangle className="h-3 w-3" /> Kurang Laku (Stok &gt;
+                  10, 0 Penjualan)
+                </p>
+                <ul className="text-sm list-disc pl-4 space-y-1 text-gray-700">
+                  {dashboard.insights.reduceStock.map((p: any) => (
+                    <li key={p.id}>
+                      {p.name} (Stok: {p.stock})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
@@ -161,7 +224,7 @@ export default function StoreDashboardPage() {
                   <Badge
                     className={cn(
                       "text-[10px]",
-                      STATUS_STYLES[order.status] || "bg-gray-100"
+                      STATUS_STYLES[order.status] || "bg-gray-100",
                     )}
                   >
                     {order.status}

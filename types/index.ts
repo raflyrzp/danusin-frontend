@@ -64,7 +64,12 @@ export interface Order {
   seller_id?: number;
   quantity: number;
   total_price: number;
-  status: "PENDING_PAYMENT" | "MENUNGGU_KONFIRMASI" | "DIPROSES" | "SELESAI" | "DIBATALKAN";
+  status:
+    | "PENDING_PAYMENT"
+    | "MENUNGGU_KONFIRMASI"
+    | "DIPROSES"
+    | "SELESAI"
+    | "DIBATALKAN";
   payment_method: "COD" | "DIGITAL";
   snap_token?: string;
   created_at: string;
@@ -123,6 +128,11 @@ export interface DashboardSellerSummary {
   total_orders_count: number;
   recent_orders: Order[];
   monthly_sales: Array<{ month: string; revenue: number; orders: number }>;
+  insights?: {
+    needsRestock: Array<{ id: number; name: string; stock: number }>;
+    reduceStock: Array<{ id: number; name: string; stock: number }>;
+    suggestion: string;
+  };
 }
 
 export interface DashboardBuyerSummary {
