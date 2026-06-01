@@ -1,5 +1,10 @@
 import { apiClient } from "@/lib/api-client";
-import type { User, AuthResponse, LoginRequest, RegisterRequest } from "@/types";
+import type {
+  User,
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+} from "@/types";
 
 export const authService = {
   login: async (data: LoginRequest) => {
@@ -12,7 +17,7 @@ export const authService = {
     if (res.data?.token) apiClient.setToken(res.data.token);
     return res;
   },
-  getProfile: () => apiClient.get<{ user: User }>("/auth/profile"),
+  getProfile: () => apiClient.get<{ user: User }>("/auth/me"),
   logout: () => apiClient.clearToken(),
   isAuthenticated: () => !!apiClient.getAuthToken(),
 };

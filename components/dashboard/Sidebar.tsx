@@ -156,7 +156,7 @@ export function Sidebar({
   };
 
   return (
-    <aside className="w-72 bg-white border-r border-[#E3D9BD] flex flex-col h-screen sticky top-0 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)]">
+    <aside className="w-full md:w-72 bg-white border-b md:border-b-0 md:border-r border-[#E3D9BD] flex flex-col h-auto md:h-screen relative md:sticky top-0 md:shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)]">
       {/* 1. Header Area: Back Button & Profile */}
       <div className="p-6 pb-2">
         <Link

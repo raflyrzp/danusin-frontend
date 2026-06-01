@@ -38,9 +38,11 @@ export default function StoreLayout({
 
   return (
     <div className="min-h-screen bg-[#F8F4E1]">
-      <div className="flex">
+      <div className="flex flex-col md:flex-row min-h-screen">
         <Sidebar user={user} userImage={user.profile_image} variant="store" />
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 w-full max-w-full overflow-hidden p-4 md:p-6 lg:p-8">
+          {children}
+        </main>
       </div>
     </div>
   );

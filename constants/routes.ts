@@ -6,5 +6,5 @@ export const ROUTES = {
   PRODUCT_DETAIL: (id: string | number) => `/products/${id}`,
   PROFILE: "/buyer/profile",
   NOTIFICATIONS: "/buyer/notifications",
-  DASHBOARD: { BUYER: "/buyer/profile", SELLER: "/store" },
+  DASHBOARD: { BUYER: "/buyer", SELLER: "/store" },
 } as const;

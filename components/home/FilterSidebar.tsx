@@ -65,7 +65,7 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
   };
 
   return (
-    <aside className="w-full space-y-6 rounded-xl bg-white p-4 shadow-sm lg:w-56">
+    <aside className="w-full space-y-6 rounded-xl bg-white p-4 shadow-sm h-max lg:w-56 lg:sticky lg:top-24">
       {/* Price Range */}
       <div>
         <div className="mb-2 flex items-center justify-between text-sm">
