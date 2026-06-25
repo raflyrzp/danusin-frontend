@@ -143,6 +143,7 @@ export interface DashboardBuyerSummary {
 }
 
 export interface ApiResponse<T = unknown> {
+  status: boolean;
   message: string;
   data?: T;
   meta?: {
@@ -154,8 +155,9 @@ export interface ApiResponse<T = unknown> {
 }
 
 export interface ApiError {
+  status: boolean;
   message: string;
-  status?: number;
+  statusCode?: number;
   errors?: Array<{ path: string; message: string }>;
 }
 

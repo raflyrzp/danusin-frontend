@@ -41,9 +41,8 @@ class ApiClient {
               window.location.href = "/login";
             }
           }
-        }
         const msg = err.response?.data?.message || err.message || "Terjadi kesalahan pada server";
-        return Promise.reject({ message: msg, status: err.response?.status, errors: err.response?.data?.errors });
+        return Promise.reject({ status: false, message: msg, statusCode: err.response?.status, errors: err.response?.data?.errors });
       }
     );
   }
