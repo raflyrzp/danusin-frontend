@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig, AxiosResponse } from "axios";
 import type { ApiError, ApiResponse } from "@/types";
 import { config } from "./config";
 
@@ -31,7 +31,7 @@ class ApiClient {
     );
 
     this.client.interceptors.response.use(
-      (res) => res,
+      (res: AxiosResponse) => res,
       async (err: AxiosError<ApiError>) => {
         if (err.response?.status === 401) {
           this.clearToken();
@@ -41,6 +41,7 @@ class ApiClient {
               window.location.href = "/login";
             }
           }
+        }
         const msg = err.response?.data?.message || err.message || "Terjadi kesalahan pada server";
         return Promise.reject({ status: false, message: msg, statusCode: err.response?.status, errors: err.response?.data?.errors });
       }
